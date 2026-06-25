@@ -1,0 +1,243 @@
+{
+  "benchmark_run_id": "346a35d5-dd14-454b-b90c-5dc4af5abc0c",
+  "name": "cli_benchmark_memory",
+  "mode": "memory",
+  "status": "completed",
+  "started_at": "2026-06-22T15:13:08.426081+00:00",
+  "completed_at": "2026-06-22T15:17:26.294159+00:00",
+  "config": {
+    "top_k": 5,
+    "chunk_size": 512,
+    "permission_filter": true,
+    "memory": false,
+    "unsafe_baseline": false
+  },
+  "summary": {
+    "count": 10,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "mrr": 0.0,
+    "ndcg_at_k": 0.0,
+    "citation_accuracy": 0.0,
+    "graph_path_hit_rate": null,
+    "entity_recall": null,
+    "permission_violation_rate": 0.0,
+    "blocked_accuracy": 1.0,
+    "allowed_accuracy": 1.0,
+    "false_block_rate": 0.0,
+    "memory_hit_rate": 1.0,
+    "latency_ms": 14.8,
+    "p50_latency_ms": 13.0,
+    "p95_latency_ms": 31.0,
+    "p99_latency_ms": 31.0,
+    "token_usage_total": 0,
+    "failure_rate": 0.0,
+    "unsafe_retrieval_count": 0,
+    "by_question_type": {
+      "memory_followup": {
+        "count": 10,
+        "recall_at_k": 0.0,
+        "precision_at_k": 0.0,
+        "mrr": 0.0,
+        "ndcg_at_k": 0.0,
+        "citation_accuracy": 0.0,
+        "graph_path_hit_rate": null,
+        "entity_recall": null,
+        "permission_violation_rate": 0.0,
+        "blocked_accuracy": 1.0,
+        "allowed_accuracy": 1.0,
+        "false_block_rate": 0.0,
+        "memory_hit_rate": 1.0,
+        "latency_ms": 14.8,
+        "p50_latency_ms": 13.0,
+        "p95_latency_ms": 31.0,
+        "p99_latency_ms": 31.0,
+        "token_usage_total": 0,
+        "failure_rate": 0.0,
+        "unsafe_retrieval_count": 0
+      }
+    }
+  },
+  "results": [
+    {
+      "question_id": "q_087",
+      "question_type": "memory_followup",
+      "question": "我们刚才讨论的供应商 SUP-001 延迟会影响哪些客户？（追问 1）",
+      "metrics": {
+        "failure": false,
+        "latency_ms": 31,
+        "memory_hit": true,
+        "question_id": "q_087",
+        "question_type": "memory_followup",
+        "requires_memory": true,
+        "follow_up_success": true,
+        "token_usage_total": 0,
+        "wrong_memory_rate": 0.0
+      },
+      "latency_ms": 31,
+      "error": null
+    },
+    {
+      "question_id": "q_088",
+      "question_type": "memory_followup",
+      "question": "我们刚才讨论的供应商 SUP-001 延迟会影响哪些客户？（追问 2）",
+      "metrics": {
+        "failure": false,
+        "latency_ms": 13,
+        "memory_hit": true,
+        "question_id": "q_088",
+        "question_type": "memory_followup",
+        "requires_memory": true,
+        "follow_up_success": true,
+        "token_usage_total": 0,
+        "wrong_memory_rate": 0.0
+      },
+      "latency_ms": 13,
+      "error": null
+    },
+    {
+      "question_id": "q_089",
+      "question_type": "memory_followup",
+      "question": "我们刚才讨论的供应商 SUP-001 延迟会影响哪些客户？（追问 3）",
+      "metrics": {
+        "failure": false,
+        "latency_ms": 14,
+        "memory_hit": true,
+        "question_id": "q_089",
+        "question_type": "memory_followup",
+        "requires_memory": true,
+        "follow_up_success": true,
+        "token_usage_total": 0,
+        "wrong_memory_rate": 0.0
+      },
+      "latency_ms": 14,
+      "error": null
+    },
+    {
+      "question_id": "q_090",
+      "question_type": "memory_followup",
+      "question": "我们刚才讨论的供应商 SUP-001 延迟会影响哪些客户？（追问 4）",
+      "metrics": {
+        "failure": false,
+        "latency_ms": 14,
+        "memory_hit": true,
+        "question_id": "q_090",
+        "question_type": "memory_followup",
+        "requires_memory": true,
+        "follow_up_success": true,
+        "token_usage_total": 0,
+        "wrong_memory_rate": 0.0
+      },
+      "latency_ms": 14,
+      "error": null
+    },
+    {
+      "question_id": "q_091",
+      "question_type": "memory_followup",
+      "question": "我们刚才讨论的供应商 SUP-001 延迟会影响哪些客户？（追问 5）",
+      "metrics": {
+        "failure": false,
+        "latency_ms": 14,
+        "memory_hit": true,
+        "question_id": "q_091",
+        "question_type": "memory_followup",
+        "requires_memory": true,
+        "follow_up_success": true,
+        "token_usage_total": 0,
+        "wrong_memory_rate": 0.0
+      },
+      "latency_ms": 14,
+      "error": null
+    },
+    {
+      "question_id": "q_092",
+      "question_type": "memory_followup",
+      "question": "继续上一个话题：该延迟事件影响了哪些订单？（物流追问 1）",
+      "metrics": {
+        "failure": false,
+        "latency_ms": 13,
+        "memory_hit": true,
+        "question_id": "q_092",
+        "question_type": "memory_followup",
+        "requires_memory": true,
+        "follow_up_success": true,
+        "token_usage_total": 0,
+        "wrong_memory_rate": 0.0
+      },
+      "latency_ms": 13,
+      "error": null
+    },
+    {
+      "question_id": "q_093",
+      "question_type": "memory_followup",
+      "question": "继续上一个话题：该延迟事件影响了哪些订单？（物流追问 2）",
+      "metrics": {
+        "failure": false,
+        "latency_ms": 12,
+        "memory_hit": true,
+        "question_id": "q_093",
+        "question_type": "memory_followup",
+        "requires_memory": true,
+        "follow_up_success": true,
+        "token_usage_total": 0,
+        "wrong_memory_rate": 0.0
+      },
+      "latency_ms": 12,
+      "error": null
+    },
+    {
+      "question_id": "q_094",
+      "question_type": "memory_followup",
+      "question": "继续上一个话题：该延迟事件影响了哪些订单？（物流追问 3）",
+      "metrics": {
+        "failure": false,
+        "latency_ms": 12,
+        "memory_hit": true,
+        "question_id": "q_094",
+        "question_type": "memory_followup",
+        "requires_memory": true,
+        "follow_up_success": true,
+        "token_usage_total": 0,
+        "wrong_memory_rate": 0.0
+      },
+      "latency_ms": 12,
+      "error": null
+    },
+    {
+      "question_id": "q_095",
+      "question_type": "memory_followup",
+      "question": "继续上一个话题：该延迟事件影响了哪些订单？（物流追问 4）",
+      "metrics": {
+        "failure": false,
+        "latency_ms": 12,
+        "memory_hit": true,
+        "question_id": "q_095",
+        "question_type": "memory_followup",
+        "requires_memory": true,
+        "follow_up_success": true,
+        "token_usage_total": 0,
+        "wrong_memory_rate": 0.0
+      },
+      "latency_ms": 12,
+      "error": null
+    },
+    {
+      "question_id": "q_096",
+      "question_type": "memory_followup",
+      "question": "继续上一个话题：该延迟事件影响了哪些订单？（物流追问 5）",
+      "metrics": {
+        "failure": false,
+        "latency_ms": 13,
+        "memory_hit": true,
+        "question_id": "q_096",
+        "question_type": "memory_followup",
+        "requires_memory": true,
+        "follow_up_success": true,
+        "token_usage_total": 0,
+        "wrong_memory_rate": 0.0
+      },
+      "latency_ms": 13,
+      "error": null
+    }
+  ]
+}

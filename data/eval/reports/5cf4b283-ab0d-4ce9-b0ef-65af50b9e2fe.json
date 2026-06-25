@@ -1,0 +1,123 @@
+{
+  "benchmark_run_id": "5cf4b283-ab0d-4ce9-b0ef-65af50b9e2fe",
+  "name": "test_graph",
+  "mode": "graphrag",
+  "status": "completed",
+  "started_at": "2026-06-21T08:00:05.855219+00:00",
+  "completed_at": "2026-06-21T08:00:08.012406+00:00",
+  "config": {
+    "top_k": 5,
+    "chunk_size": 512,
+    "permission_filter": true,
+    "memory": false,
+    "unsafe_baseline": false
+  },
+  "summary": {
+    "count": 3,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "mrr": 0.0,
+    "ndcg_at_k": 0.0,
+    "citation_accuracy": 0.0,
+    "graph_path_hit_rate": 1.0,
+    "entity_recall": 0.5,
+    "permission_violation_rate": 0.0,
+    "blocked_accuracy": 1.0,
+    "allowed_accuracy": 1.0,
+    "false_block_rate": 0.0,
+    "memory_hit_rate": 1.0,
+    "latency_ms": 680.6666666666666,
+    "p50_latency_ms": 10.0,
+    "p95_latency_ms": 2024.0,
+    "p99_latency_ms": 2024.0,
+    "token_usage_total": 0,
+    "failure_rate": 0.0,
+    "unsafe_retrieval_count": 0,
+    "by_question_type": {
+      "logistics": {
+        "count": 3,
+        "recall_at_k": 0.0,
+        "precision_at_k": 0.0,
+        "mrr": 0.0,
+        "ndcg_at_k": 0.0,
+        "citation_accuracy": 0.0,
+        "graph_path_hit_rate": 1.0,
+        "entity_recall": 0.5,
+        "permission_violation_rate": 0.0,
+        "blocked_accuracy": 1.0,
+        "allowed_accuracy": 1.0,
+        "false_block_rate": 0.0,
+        "memory_hit_rate": 1.0,
+        "latency_ms": 680.6666666666666,
+        "p50_latency_ms": 10.0,
+        "p95_latency_ms": 2024.0,
+        "p99_latency_ms": 2024.0,
+        "token_usage_total": 0,
+        "failure_rate": 0.0,
+        "unsafe_retrieval_count": 0
+      }
+    }
+  },
+  "results": [
+    {
+      "question_id": "q_031",
+      "question_type": "logistics",
+      "question": "SUP-001 港口拥堵导致的物流延迟会影响哪些订单？（变体 1）",
+      "metrics": {
+        "failure": false,
+        "latency_ms": 2024,
+        "question_id": "q_031",
+        "entity_recall": 0.5,
+        "question_type": "logistics",
+        "should_be_blocked": false,
+        "token_usage_total": 0,
+        "graph_path_hit_rate": 1.0,
+        "requires_permission": false,
+        "affected_entity_accuracy": 0.5,
+        "was_blocked_or_no_evidence": false
+      },
+      "latency_ms": 2024,
+      "error": null
+    },
+    {
+      "question_id": "q_032",
+      "question_type": "logistics",
+      "question": "SUP-001 港口拥堵导致的物流延迟会影响哪些订单？（变体 2）",
+      "metrics": {
+        "failure": false,
+        "latency_ms": 10,
+        "question_id": "q_032",
+        "entity_recall": 0.5,
+        "question_type": "logistics",
+        "should_be_blocked": false,
+        "token_usage_total": 0,
+        "graph_path_hit_rate": 1.0,
+        "requires_permission": false,
+        "affected_entity_accuracy": 0.5,
+        "was_blocked_or_no_evidence": false
+      },
+      "latency_ms": 10,
+      "error": null
+    },
+    {
+      "question_id": "q_033",
+      "question_type": "logistics",
+      "question": "SUP-001 港口拥堵导致的物流延迟会影响哪些订单？（变体 3）",
+      "metrics": {
+        "failure": false,
+        "latency_ms": 8,
+        "question_id": "q_033",
+        "entity_recall": 0.5,
+        "question_type": "logistics",
+        "should_be_blocked": false,
+        "token_usage_total": 0,
+        "graph_path_hit_rate": 1.0,
+        "requires_permission": false,
+        "affected_entity_accuracy": 0.5,
+        "was_blocked_or_no_evidence": false
+      },
+      "latency_ms": 8,
+      "error": null
+    }
+  ]
+}

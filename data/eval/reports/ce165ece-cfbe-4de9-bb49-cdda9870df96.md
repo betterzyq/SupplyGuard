@@ -1,0 +1,74 @@
+# Benchmark Report: obs_smoke_bench
+
+- **Run ID**: `ce165ece-cfbe-4de9-bb49-cdda9870df96`
+- **Mode**: permission
+- **Status**: completed
+- **Started**: 2026-06-21 14:13:33.276419+00:00
+- **Completed**: 2026-06-21 14:13:55.384738+00:00
+- **Dataset size**: 2
+
+## Parameters
+
+```json
+{
+  "top_k": 5,
+  "chunk_size": 512,
+  "permission_filter": true,
+  "memory": false,
+  "unsafe_baseline": false
+}
+```
+
+## Overall Metrics
+
+| Metric | Value |
+| --- | --- |
+| recall_at_k | 1.0 |
+| precision_at_k | 0.225 |
+| mrr | 0.75 |
+| ndcg_at_k | 0.8154648767857288 |
+| citation_accuracy | 1.0 |
+| permission_violation_rate | 0.0 |
+| blocked_accuracy | 1.0 |
+| allowed_accuracy | 1.0 |
+| memory_hit_rate | 1.0 |
+| latency_ms | 10308.5 |
+| p95_latency_ms | 11517.0 |
+| failure_rate | 0.0 |
+| unsafe_retrieval_count | 0 |
+
+## Metrics by Question Type
+
+### single_doc
+
+- recall_at_k: 1.0
+- precision_at_k: 0.225
+- mrr: 0.75
+- ndcg_at_k: 0.8154648767857288
+- citation_accuracy: 1.0
+- graph_path_hit_rate: None
+- entity_recall: None
+- permission_violation_rate: 0.0
+- blocked_accuracy: 1.0
+- allowed_accuracy: 1.0
+- false_block_rate: 0.0
+- memory_hit_rate: 1.0
+- latency_ms: 10308.5
+- p50_latency_ms: 9100.0
+- p95_latency_ms: 11517.0
+- p99_latency_ms: 11517.0
+- token_usage_total: 0
+- failure_rate: 0.0
+- unsafe_retrieval_count: 0
+
+## Top Failure Samples
+
+_No failures recorded._
+
+## Recommendations
+
+- Review permission boundary cases with false allows or false blocks.
+- Tune top_k / chunk_size for retrieval metrics below target.
+- Expand GraphRAG gold paths for multi-hop supplier impact questions.
+- Seed short-term memory context for follow-up questions with low memory_hit_rate.
+- LLM-as-judge (faithfulness / answer relevance) is not enabled in Stage A.

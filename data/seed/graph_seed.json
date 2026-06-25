@@ -1,0 +1,93 @@
+{
+  "materials": [
+    {"code": "M001", "name": "Steel Frame", "category": "metal", "is_critical": true},
+    {"code": "M002", "name": "Control PCB", "category": "electronics", "is_critical": true},
+    {"code": "M003", "name": "Plastic Housing", "category": "polymer", "is_critical": false},
+    {"code": "M004", "name": "Precision Gear", "category": "mechanical", "is_critical": true}
+  ],
+  "products": [
+    {"code": "P001", "name": "Industrial Pump A", "category": "equipment"},
+    {"code": "P002", "name": "Sensor Module B", "category": "component"},
+    {"code": "P003", "name": "Assembly Unit C", "category": "assembly"}
+  ],
+  "customers": [
+    {"code": "C001", "name": "Acme Manufacturing", "region": "US", "tier": 1},
+    {"code": "C002", "name": "Global Tech Ltd", "region": "EU", "tier": 1},
+    {"code": "C003", "name": "Pacific Retail Co", "region": "APAC", "tier": 2}
+  ],
+  "supplies": [
+    {"supplier_code": "SUP-001", "material_code": "M001"},
+    {"supplier_code": "SUP-001", "material_code": "M002"},
+    {"supplier_code": "SUP-002", "material_code": "M002"},
+    {"supplier_code": "SUP-002", "material_code": "M003"},
+    {"supplier_code": "SUP-003", "material_code": "M004"},
+    {"supplier_code": "SUP-004", "material_code": "M001"}
+  ],
+  "used_in": [
+    {"material_code": "M001", "product_code": "P001"},
+    {"material_code": "M002", "product_code": "P001"},
+    {"material_code": "M002", "product_code": "P002"},
+    {"material_code": "M003", "product_code": "P003"},
+    {"material_code": "M004", "product_code": "P003"}
+  ],
+  "order_links": [
+    {"order_no": "PO-2024-0001", "product_code": "P001", "customer_code": "C001"},
+    {"order_no": "PO-2024-0002", "product_code": "P002", "customer_code": "C001"},
+    {"order_no": "PO-2024-0003", "product_code": "P003", "customer_code": "C002"},
+    {"order_no": "PO-2024-0004", "product_code": "P001", "customer_code": "C002"},
+    {"order_no": "PO-2024-0005", "product_code": "P003", "customer_code": "C003"},
+    {"order_no": "PO-2024-0006", "product_code": "P002", "customer_code": "C003"},
+    {"order_no": "PO-2024-0007", "product_code": "P001", "customer_code": "C001"},
+    {"order_no": "PO-2024-0008", "product_code": "P003", "customer_code": "C002"}
+  ],
+  "alternatives": [
+    {"supplier_code": "SUP-001", "alternative_code": "SUP-004", "similarity_score": 0.82},
+    {"supplier_code": "SUP-002", "alternative_code": "SUP-001", "similarity_score": 0.75}
+  ],
+  "delivery_events": [
+    {
+      "id": "DE-001",
+      "supplier_code": "SUP-001",
+      "order_no": "PO-2024-0001",
+      "status": "delayed",
+      "delay_days": 5,
+      "delay_reason": "port congestion"
+    },
+    {
+      "id": "DE-002",
+      "supplier_code": "SUP-003",
+      "order_no": "PO-2024-0003",
+      "status": "delayed",
+      "delay_days": 3,
+      "delay_reason": "customs clearance"
+    },
+    {
+      "id": "DE-003",
+      "supplier_code": "SUP-002",
+      "order_no": "PO-2024-0002",
+      "status": "on_time",
+      "delay_days": 0,
+      "delay_reason": null
+    }
+  ],
+  "quality_issues": [
+    {
+      "id": "QI-001",
+      "supplier_code": "SUP-001",
+      "material_code": "M002",
+      "product_code": "P001",
+      "defect_type": "dimensional_tolerance",
+      "severity": "medium",
+      "result": "conditional_accept"
+    },
+    {
+      "id": "QI-002",
+      "supplier_code": "SUP-003",
+      "material_code": "M004",
+      "product_code": "P003",
+      "defect_type": "surface_defect",
+      "severity": "high",
+      "result": "rework_required"
+    }
+  ]
+}

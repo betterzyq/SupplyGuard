@@ -1,0 +1,33 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+:root {
+  --background: 248 250 252;
+  --foreground: 15 23 42;
+  --card: 255 255 255;
+  --primary: 79 70 229;
+  --primary-foreground: 255 255 255;
+  --muted: 241 245 249;
+  --border: 226 232 240;
+  --ring: 99 102 241;
+}
+
+body {
+  color: rgb(var(--foreground));
+  background: rgb(var(--background));
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+@keyframes pulse-risk {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse-risk {
+  animation: pulse-risk 2s ease-in-out infinite;
+}
+
+.react-flow__node-supply {
+  font-size: 11px;
+}

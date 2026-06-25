@@ -1,0 +1,11 @@
+question_id,question_type,latency_ms,recall_at_k,precision_at_k,citation_accuracy,graph_path_hit_rate,entity_recall,permission_violation,memory_hit,error
+q_087,memory_followup,107,,,,,,,True,
+q_088,memory_followup,13,,,,,,,True,
+q_089,memory_followup,16,,,,,,,True,
+q_090,memory_followup,12,,,,,,,True,
+q_091,memory_followup,12,,,,,,,True,
+q_092,memory_followup,13,,,,,,,True,
+q_093,memory_followup,12,,,,,,,True,
+q_094,memory_followup,13,,,,,,,True,
+q_095,memory_followup,11,,,,,,,True,
+q_096,memory_followup,12,,,,,,,True,

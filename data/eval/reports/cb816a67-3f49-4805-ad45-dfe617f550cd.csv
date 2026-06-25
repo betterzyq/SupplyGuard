@@ -1,0 +1,2 @@
+question_id,question_type,latency_ms,recall_at_k,precision_at_k,citation_accuracy,graph_path_hit_rate,entity_recall,permission_violation,memory_hit,error
+q_005,single_doc,1132,1.0,0.5,1.0,,,False,,

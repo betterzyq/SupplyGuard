@@ -1,0 +1,6 @@
+question_id,question_type,latency_ms,recall_at_k,precision_at_k,citation_accuracy,graph_path_hit_rate,entity_recall,permission_violation,memory_hit,error
+q_001,single_doc,16417,1.0,0.2,1.0,,,False,,
+q_002,single_doc,663,1.0,0.2,1.0,,,False,,
+q_003,single_doc,60867,1.0,0.25,1.0,,,False,,
+q_004,single_doc,39069,1.0,0.25,1.0,,,False,,
+q_005,single_doc,314,1.0,0.25,1.0,,,False,,
