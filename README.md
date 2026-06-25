@@ -255,6 +255,12 @@ SupplyGuard/
 
 ---
 
+## Maintainer
+
+- GitHub: [@betterzyq](https://github.com/betterzyq)
+
+---
+
 ## License
 
 MIT（或按项目实际需要调整）
