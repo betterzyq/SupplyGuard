@@ -1,4 +1,4 @@
-.PHONY: up down logs api dev-check format lint migrate migration seed check-authz ingest-seed-docs smoke-mvp3 build-graph smoke-graphrag smoke-memory inspect-graph inspect-memory generate-eval bench smoke-benchmark smoke-observability smoke-tools smoke-llm-provider load-test-chat load-test-rag load-test-graph web web-install profile-data normalize-data load-real-data build-real-graph generate-real-docs ingest-real-docs
+.PHONY: up down logs local-up local-down local-status local-restart api dev-check format lint migrate migration seed check-authz ingest-seed-docs smoke-mvp3 build-graph smoke-graphrag smoke-memory inspect-graph inspect-memory generate-eval bench smoke-benchmark smoke-observability smoke-tools smoke-llm-provider load-test-chat load-test-rag load-test-graph web web-install profile-data normalize-data load-real-data build-real-graph generate-real-docs ingest-real-docs
 
 COMPOSE = docker compose -f infra/docker-compose.yml
 
@@ -19,6 +19,18 @@ down:
 
 logs:
 	$(COMPOSE) logs -f
+
+local-up:
+	bash scripts/local_infra.sh up
+
+local-down:
+	bash scripts/local_infra.sh down
+
+local-status:
+	bash scripts/local_infra.sh status
+
+local-restart:
+	bash scripts/local_infra.sh restart
 
 api:
 	uv run uvicorn apps.api.main:app --reload --host 0.0.0.0 --port 8000

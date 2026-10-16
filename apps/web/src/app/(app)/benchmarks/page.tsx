@@ -1,5 +1,6 @@
 "use client";
 
+import { displayLabel, errorLabel } from "@/lib/labels";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import ReactECharts from "echarts-for-react";
@@ -13,9 +14,9 @@ import { cn } from "@/lib/utils";
 const BENCHMARK_MODES = [
   { value: "secure_rag", label: "Secure RAG" },
   { value: "graphrag", label: "GraphRAG" },
-  { value: "memory", label: "Memory" },
-  { value: "permission", label: "Permission" },
-  { value: "all", label: "All modes" },
+  { value: "memory", label: "记忆能力" },
+  { value: "permission", label: "权限控制" },
+  { value: "all", label: "全部模式" },
 ] as const;
 
 function num(v: unknown): number | null {
@@ -109,11 +110,11 @@ export default function BenchmarksPage() {
         tooltip: {},
         radar: {
           indicator: [
-            { name: "Recall@K", max: 1 },
-            { name: "Citation", max: 1 },
-            { name: "Graph Hit", max: 1 },
-            { name: "Memory Hit", max: 1 },
-            { name: "Blocked Acc", max: 1 },
+            { name: "召回率（Recall@K）", max: 1 },
+            { name: "引用准确率", max: 1 },
+            { name: "图谱命中率", max: 1 },
+            { name: "记忆命中率", max: 1 },
+            { name: "拦截准确率", max: 1 },
           ],
         },
         series: [
@@ -128,7 +129,7 @@ export default function BenchmarksPage() {
                   memoryHit ?? 0,
                   blocked ?? 0,
                 ],
-                name: selectedRun?.name || selectedRun?.mode || "Benchmark",
+                name: selectedRun?.name || selectedRun?.mode || "基准评测",
                 areaStyle: { opacity: 0.15 },
               },
             ],
@@ -140,8 +141,8 @@ export default function BenchmarksPage() {
   if (!isAdmin) {
     return (
       <div>
-        <PageHeader title="Benchmarks" description="Admin only — deterministic evaluation dashboard." />
-        <p className="text-sm text-red-600">Benchmark API requires admin role. Log in as admin@example.com.</p>
+        <PageHeader title="基准评测" description="仅管理员可访问，查看确定性评测结果。" />
+        <p className="text-sm text-red-600">基准评测需要管理员权限，请使用 admin@example.com 登录。</p>
       </div>
     );
   }
@@ -149,23 +150,23 @@ export default function BenchmarksPage() {
   return (
     <div>
       <PageHeader
-        title="Benchmark Experiments"
-        description="Prove Secure RAG, GraphRAG, Memory and permission controls."
+        title="基准评测实验"
+        description="评估 Secure RAG、GraphRAG、记忆能力与权限控制的效果。"
       />
 
-      <SectionCard title="Run Benchmark" className="mb-6">
+      <SectionCard title="运行基准评测" className="mb-6">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <label className="block text-sm">
-            <span className="text-slate-600">Name</span>
+            <span className="text-slate-600">实验名称</span>
             <input
               value={runName}
               onChange={(e) => setRunName(e.target.value)}
               className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
-              placeholder="web_benchmark"
+              placeholder="输入实验名称"
             />
           </label>
           <label className="block text-sm">
-            <span className="text-slate-600">Mode</span>
+            <span className="text-slate-600">评测模式</span>
             <select
               value={runMode}
               onChange={(e) => setRunMode(e.target.value as typeof runMode)}
@@ -179,7 +180,7 @@ export default function BenchmarksPage() {
             </select>
           </label>
           <label className="block text-sm">
-            <span className="text-slate-600">Limit (questions)</span>
+            <span className="text-slate-600">题目数量上限</span>
             <input
               type="number"
               min={1}
@@ -196,23 +197,23 @@ export default function BenchmarksPage() {
               disabled={runMutation.isPending || isJobRunning}
               className="w-full rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
-              {runMutation.isPending ? "提交中…" : isJobRunning ? "运行中…" : "Run Benchmark"}
+              {runMutation.isPending ? "提交中…" : isJobRunning ? "运行中…" : "运行评测"}
             </button>
           </div>
         </div>
         {(runMutation.isPending || isJobRunning) && (
           <p className="mt-3 text-sm text-amber-700 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
-            Benchmark 已在后台运行，页面将每 3 秒自动刷新状态。100 题约需 5–10 分钟，请勿关闭页面。
+            基准评测已在后台运行，页面将每 3 秒自动刷新状态。100 题约需 5–10 分钟，请勿关闭页面。
           </p>
         )}
         {runMutation.isError && (
           <p className="mt-3 text-sm text-red-600 rounded-lg border border-red-200 bg-red-50 px-3 py-2">
-            提交失败：{(runMutation.error as Error)?.message || "未知错误"}
+            提交失败：{errorLabel((runMutation.error as Error)?.message, "未知错误")}
           </p>
         )}
         {runMutation.isSuccess && runMutation.data.status === "running" && (
           <p className="mt-3 text-sm text-blue-700 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2">
-            任务已提交（run id: {runMutation.data.benchmark_run_id?.slice(0, 8)}…），等待后台完成…
+            任务已提交（运行 ID：{runMutation.data.benchmark_run_id?.slice(0, 8)}…），等待后台完成…
           </p>
         )}
         {runMutation.isSuccess && runMutation.data.status === "completed" && (
@@ -224,14 +225,14 @@ export default function BenchmarksPage() {
 
       {isError && (
         <p className="mb-4 text-sm text-red-600 rounded-lg border border-red-200 bg-red-50 px-3 py-2">
-          无法加载 Benchmark 数据：{(error as Error)?.message || "请确认已用 admin 登录且 API 已启动"}
+          无法加载基准评测数据：{errorLabel((error as Error)?.message, "请确认已使用管理员账号登录，且 API 已启动")}
         </p>
       )}
 
       {!isLoading && !isError && (!runs || runs.length === 0) && !isJobRunning && (
         <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          <p className="font-medium">尚无 Benchmark 运行记录</p>
-          <p className="mt-1 text-amber-800">使用上方表单运行第一次 Benchmark，或在项目根目录执行 CLI：</p>
+          <p className="font-medium">暂无基准评测记录</p>
+          <p className="mt-1 text-amber-800">使用上方表单开始首次评测，或在项目根目录执行命令：</p>
           <pre className="mt-2 overflow-x-auto rounded bg-white/80 p-2 text-xs text-slate-800">
             {`make generate-eval\nmake bench`}
           </pre>
@@ -242,48 +243,48 @@ export default function BenchmarksPage() {
         <p className="mb-3 text-sm text-slate-500">
           当前查看：<span className="font-medium text-slate-800">{selectedRun.name}</span>
           <span className="mx-2">·</span>
-          {selectedRun.mode}
+          {displayLabel(selectedRun.mode)}
           <span className="mx-2">·</span>
-          {selectedRun.status}
+          {displayLabel(selectedRun.status)}
         </p>
       )}
 
       <div className="grid gap-4 sm:grid-cols-4 mb-6">
-        <StatCard title="Citation Accuracy" value={pct(citation)} />
+        <StatCard title="引用准确率" value={pct(citation)} />
         <StatCard
-          title="Permission Violation"
+          title="越权率"
           value={pct(permViolation, 1)}
-          subtitle="Target: 0%"
+          subtitle="目标：0%"
         />
         <StatCard
-          title="Graph Path Hit"
+          title="图谱路径命中率"
           value={pct(graphHit)}
-          subtitle={graphHit == null && selectedRun ? "本模式无 Graph 指标" : undefined}
+          subtitle={graphHit == null && selectedRun ? "当前模式不包含图谱指标" : undefined}
         />
         <StatCard
-          title="P95 Latency"
+          title="P95 响应耗时"
           value={p95 != null ? `${Math.round(p95)}ms` : "—"}
         />
       </div>
 
       {radarOption && (
-        <SectionCard title="Strategy Radar">
+        <SectionCard title="评测指标雷达图">
           <ReactECharts option={radarOption} style={{ height: 360 }} />
           {graphHit == null && (
-            <p className="mt-2 text-xs text-slate-500">Graph Hit 轴在本 run 无有效数据（非 graphrag/all 模式时为 N/A）。</p>
+            <p className="mt-2 text-xs text-slate-500">当前评测暂无有效图谱命中率；仅 GraphRAG 或全部模式包含该指标。</p>
           )}
         </SectionCard>
       )}
 
-      <SectionCard title="Recent Runs" className="mt-6">
+      <SectionCard title="最近评测记录" className="mt-6">
         <p className="mb-3 text-xs text-slate-500">点击一行以切换上方指标与雷达图</p>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b text-left text-slate-500">
-              <th className="pb-2 pr-4">Name</th>
-              <th className="pb-2 pr-4">Mode</th>
-              <th className="pb-2 pr-4">Status</th>
-              <th className="pb-2">Started</th>
+              <th className="pb-2 pr-4">实验名称</th>
+              <th className="pb-2 pr-4">评测模式</th>
+              <th className="pb-2 pr-4">运行状态</th>
+              <th className="pb-2">开始时间</th>
             </tr>
           </thead>
           <tbody>
@@ -299,7 +300,7 @@ export default function BenchmarksPage() {
                   )}
                 >
                   <td className={cn("py-2 pr-4", active && "font-medium text-brand-700")}>{r.name}</td>
-                  <td className="py-2 pr-4">{r.mode}</td>
+                  <td className="py-2 pr-4">{displayLabel(r.mode)}</td>
                   <td className="py-2 pr-4">
                     <span
                       className={cn(
@@ -311,11 +312,11 @@ export default function BenchmarksPage() {
                             : "bg-amber-100 text-amber-800"
                       )}
                     >
-                      {r.status}
+                      {displayLabel(r.status)}
                     </span>
                   </td>
                   <td className="py-2 text-slate-500 text-xs">
-                    {r.started_at ? new Date(r.started_at).toLocaleString() : "—"}
+                    {r.started_at ? new Date(r.started_at).toLocaleString("zh-CN") : "—"}
                   </td>
                 </tr>
               );

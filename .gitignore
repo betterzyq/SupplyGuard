@@ -19,6 +19,7 @@ dist/
 build/
 
 # Virtual environments
+.venv
 .venv/
 venv/
 
@@ -29,6 +30,7 @@ venv/
 *.swo
 
 # Logs & local data
+.local/
 logs/
 *.log
 data/raw/*

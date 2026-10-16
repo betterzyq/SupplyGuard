@@ -1,5 +1,6 @@
 "use client";
 
+import { toolLabel, toolDescription } from "@/lib/labels";
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import Link from "next/link";
@@ -24,9 +25,9 @@ export default function ToolsPage() {
 
   return (
     <div>
-      <PageHeader title="MCP Tools" description="Tool Permission Guard — role-based tool access with audit logs." />
+      <PageHeader title="MCP 工具" description="按角色控制工具访问权限，并记录调用审计日志。" />
       <div className="grid gap-6 lg:grid-cols-2">
-        <SectionCard title="Available Tools (current role)">
+        <SectionCard title="当前角色可用工具">
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {(registry?.tools || []).map((t) => (
               <button
@@ -35,17 +36,18 @@ export default function ToolsPage() {
                 onClick={() => setSelected(t.name)}
                 className={`w-full text-left rounded-lg border p-3 text-sm ${selected === t.name ? "border-brand-400 bg-brand-50" : "border-slate-100"}`}
               >
-                <p className="font-medium">{t.name}</p>
-                <p className="text-xs text-slate-500">{t.description}</p>
-                {t.high_risk && <span className="text-xs text-purple-600">high risk</span>}
+                <p className="font-medium">{toolLabel(t.name)}</p>
+                <p className="text-xs font-mono text-slate-400">{t.name}</p>
+                <p className="text-xs text-slate-500">{toolDescription(t.name, t.description)}</p>
+                {t.high_risk && <span className="text-xs text-purple-600">高风险操作</span>}
               </button>
             ))}
           </div>
         </SectionCard>
-        <SectionCard title="Call Tool">
-          <input value={supplierCode} onChange={(e) => setSupplierCode(e.target.value)} className="w-full rounded border p-2 text-sm mb-3" placeholder="supplier_code" />
+        <SectionCard title="调用工具">
+          <input value={supplierCode} onChange={(e) => setSupplierCode(e.target.value)} className="w-full rounded border p-2 text-sm mb-3" placeholder="供应商编码，例如 SUP-001" />
           <button type="button" onClick={() => mutation.mutate()} disabled={mutation.isPending} className="w-full rounded-lg bg-brand-600 py-2 text-sm text-white disabled:opacity-50">
-            Call {selected}
+            调用 {toolLabel(selected)}
           </button>
           {mutation.data && (
             <div className="mt-4 space-y-2">

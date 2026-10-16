@@ -1,5 +1,6 @@
 "use client";
 
+import { displayLabel } from "@/lib/labels";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Play } from "lucide-react";
@@ -12,12 +13,12 @@ import { DEMO_SCENARIOS, getDashboardSummary, listAuditLogs } from "@/lib/api";
 import { formatLatency } from "@/lib/utils";
 
 const capabilities = [
-  { key: "secure_rag", label: "Secure RAG", href: "/rag", desc: "Role-filtered vector retrieval" },
-  { key: "graphrag", label: "GraphRAG", href: "/graphrag", desc: "Multi-hop supply chain paths" },
-  { key: "memory", label: "Memory", href: "/memory", desc: "Session & long-term context" },
-  { key: "llm", label: "Agent Workflow", href: "/agent", desc: "LangGraph orchestration" },
-  { key: "benchmark", label: "Benchmark", href: "/benchmarks", desc: "Deterministic evaluation" },
-  { key: "observability", label: "Observability", href: "/traces", desc: "Full trace replay" },
+  { key: "secure_rag", label: "Secure RAG", href: "/rag", desc: "按角色权限过滤的向量检索" },
+  { key: "graphrag", label: "GraphRAG", href: "/graphrag", desc: "供应链多跳路径分析" },
+  { key: "memory", label: "记忆管理", href: "/memory", desc: "会话记忆与长期上下文" },
+  { key: "llm", label: "Agent 工作流", href: "/agent", desc: "基于 LangGraph 的工作流编排" },
+  { key: "benchmark", label: "基准评测", href: "/benchmarks", desc: "确定性评测" },
+  { key: "observability", label: "链路追踪", href: "/traces", desc: "完整执行链路回放" },
 ];
 
 function capabilityBadgeClass(status?: string) {
@@ -36,12 +37,12 @@ export default function DashboardPage() {
   return (
     <div>
       <PageHeader
-        title="Risk Operations Dashboard"
-        description="Supply chain risk command center — detect, trace, retrieve, and coordinate AI agents with full auditability."
+        title="风险运营总览"
+        description="集中查看供应链风险识别、影响追踪、证据检索与 AI Agent 协作情况，全程可审计。"
       />
 
       {/* Demo Scenarios */}
-      <SectionCard title="Demo Scenarios" description="One-click scenarios for interviews and demos">
+      <SectionCard title="演示场景" description="快速体验核心业务场景">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {DEMO_SCENARIOS.map((s) => (
             <Link
@@ -73,7 +74,7 @@ export default function DashboardPage() {
               <span
                 className={`text-xs px-2 py-0.5 rounded-full ${capabilityBadgeClass(summary?.capability_status?.[c.key])}`}
               >
-                {summary?.capability_status?.[c.key] === "no_data" ? "no runs" : summary?.capability_status?.[c.key] || "—"}
+                {displayLabel(summary?.capability_status?.[c.key])}
               </span>
             </div>
             <p className="mt-2 text-sm text-slate-500">{c.desc}</p>
@@ -83,15 +84,15 @@ export default function DashboardPage() {
 
       {/* Risk Operations Summary */}
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <StatCard title="Permission Denials" value={summary?.audit_stats?.denied_count ?? "—"} subtitle="Audit log" trend="up" />
-        <StatCard title="Citation Accuracy" value={bench?.citation_accuracy != null ? `${((bench.citation_accuracy as number) * 100).toFixed(0)}%` : "—"} subtitle="Latest benchmark" />
-        <StatCard title="Graph Path Hit Rate" value={bench?.graph_path_hit_rate != null ? `${((bench.graph_path_hit_rate as number) * 100).toFixed(0)}%` : "—"} />
-        <StatCard title="Memory Hit Rate" value={bench?.memory_hit_rate != null ? `${((bench.memory_hit_rate as number) * 100).toFixed(0)}%` : "—"} />
-        <StatCard title="P95 Latency" value={bench?.p95_latency_ms != null ? formatLatency(bench.p95_latency_ms as number) : "—"} />
+        <StatCard title="权限拒绝次数" value={summary?.audit_stats?.denied_count ?? "—"} subtitle="来自审计日志" trend="up" />
+        <StatCard title="引用准确率" value={bench?.citation_accuracy != null ? `${((bench.citation_accuracy as number) * 100).toFixed(0)}%` : "—"} subtitle="最近一次基准评测" />
+        <StatCard title="图谱路径命中率" value={bench?.graph_path_hit_rate != null ? `${((bench.graph_path_hit_rate as number) * 100).toFixed(0)}%` : "—"} />
+        <StatCard title="记忆命中率" value={bench?.memory_hit_rate != null ? `${((bench.memory_hit_rate as number) * 100).toFixed(0)}%` : "—"} />
+        <StatCard title="P95 响应耗时" value={bench?.p95_latency_ms != null ? formatLatency(bench.p95_latency_ms as number) : "—"} />
       </div>
 
       {/* Supply Chain Preview */}
-      <SectionCard title="Supply Chain Impact Preview" description="SUP-001 failure propagates downstream" className="mt-6">
+      <SectionCard title="供应链影响预览" description="查看 SUP-001 故障向下游传播的影响" className="mt-6">
         <div className="flex flex-wrap items-center gap-2 text-sm">
           {["SUP-001", "M001", "P001", "PO-2024-0001", "C001"].map((code, i) => (
             <span key={code} className="flex items-center gap-2">
@@ -107,19 +108,19 @@ export default function DashboardPage() {
           ))}
         </div>
         <Link href="/supply-chain" className="mt-4 inline-flex items-center gap-1 text-sm text-brand-600 hover:underline">
-          Open Supply Chain Map <ArrowRight className="h-4 w-4" />
+          打开供应链图谱 <ArrowRight className="h-4 w-4" />
         </Link>
       </SectionCard>
 
       {/* Recent Audit */}
-      <SectionCard title="Recent Permission Events" description="From audit logs" className="mt-6">
+      <SectionCard title="最近权限事件" description="来自审计日志" className="mt-6">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left text-slate-500">
-                <th className="pb-2 pr-4">Action</th>
-                <th className="pb-2 pr-4">Decision</th>
-                <th className="pb-2">Reason</th>
+                <th className="pb-2 pr-4">操作</th>
+                <th className="pb-2 pr-4">权限判定</th>
+                <th className="pb-2">原因</th>
               </tr>
             </thead>
             <tbody>
@@ -136,7 +137,7 @@ export default function DashboardPage() {
           </table>
         </div>
         <Link href="/audit" className="mt-3 inline-block text-sm text-brand-600 hover:underline">
-          View all audit logs →
+          查看全部审计日志 →
         </Link>
       </SectionCard>
     </div>

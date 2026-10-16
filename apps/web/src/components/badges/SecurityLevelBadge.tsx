@@ -1,3 +1,4 @@
+import { securityLevelLabel } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
 const colors: Record<string, string> = {
@@ -11,7 +12,7 @@ const colors: Record<string, string> = {
 export function SecurityLevelBadge({ level }: { level: string }) {
   return (
     <span className={cn("rounded px-2 py-0.5 text-xs font-medium", colors[level] || "bg-slate-100")}>
-      {level}
+      {securityLevelLabel(level)}
     </span>
   );
 }

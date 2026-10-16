@@ -86,6 +86,7 @@ export interface GraphRAGResponse {
   cypher_template: string;
   trace_id: string;
   latency_ms: number;
+  result_count: number;
   permission_decision: string;
 }
 
@@ -368,14 +369,14 @@ export async function runImpactSimulation(body: {
 }
 
 export const SEED_USERS = [
-  { email: "admin@example.com", role: "admin", label: "Admin" },
-  { email: "procurement_manager@example.com", role: "procurement_manager", label: "Procurement Manager" },
-  { email: "procurement_staff@example.com", role: "procurement_staff", label: "Procurement Staff" },
-  { email: "logistics_manager@example.com", role: "logistics_manager", label: "Logistics Manager" },
-  { email: "finance_manager@example.com", role: "finance_manager", label: "Finance Manager" },
-  { email: "quality_manager@example.com", role: "quality_manager", label: "Quality Manager" },
-  { email: "executive@example.com", role: "executive", label: "Executive" },
-  { email: "supplier@example.com", role: "external_supplier", label: "External Supplier" },
+  { email: "admin@example.com", role: "admin", label: "管理员" },
+  { email: "procurement_manager@example.com", role: "procurement_manager", label: "采购经理" },
+  { email: "procurement_staff@example.com", role: "procurement_staff", label: "采购专员" },
+  { email: "logistics_manager@example.com", role: "logistics_manager", label: "物流经理" },
+  { email: "finance_manager@example.com", role: "finance_manager", label: "财务经理" },
+  { email: "quality_manager@example.com", role: "quality_manager", label: "质量经理" },
+  { email: "executive@example.com", role: "executive", label: "管理层" },
+  { email: "supplier@example.com", role: "external_supplier", label: "外部供应商" },
 ] as const;
 
 export const DEMO_SCENARIOS = [
@@ -396,7 +397,7 @@ export const DEMO_SCENARIOS = [
   {
     id: "impact",
     title: "供应链风险传播",
-    query: "如果 SUP-001 出现 critical delivery delay，会影响哪些下游节点？",
+    query: "如果 SUP-001 出现严重交付延误，会影响哪些下游节点？",
     path: "/supply-chain",
   },
   {
@@ -409,20 +410,20 @@ export const DEMO_SCENARIOS = [
   },
   {
     id: "memory",
-    title: "Memory 追问",
+    title: "记忆追问",
     query: "上次我们为什么认为 SUP-001 风险较高？",
     path: "/agent",
   },
   {
     id: "tool",
-    title: "Tool Permission",
+    title: "工具权限演示",
     query: "查询供应商 SUP-001 的合同摘要",
     path: "/tools",
     tool_name: "query_supplier_contract_summary",
   },
   {
     id: "supplier-portal",
-    title: "External Supplier",
+    title: "供应商门户",
     query: "查看我的订单交付状态",
     path: "/tools",
     tool_name: "query_delivery_status",

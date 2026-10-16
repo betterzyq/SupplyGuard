@@ -1,5 +1,6 @@
 "use client";
 
+import { displayLabel, GRAPH_ARIA_LABELS } from "@/lib/labels";
 import {
   ReactFlow,
   Background,
@@ -140,7 +141,7 @@ function buildFromPaths(
             id: edgeId,
             source: prevId,
             target: id,
-            label: variant === "classic" ? path.relationships?.[ni - 1]?.type || "LINK" : undefined,
+            label: variant === "classic" ? displayLabel(path.relationships?.[ni - 1]?.type || "LINK") : undefined,
             animated: targetImpact !== "none",
             style: {
               stroke,
@@ -295,7 +296,7 @@ function PropagationNode({ data }: { data: GraphNodeData }) {
         )}
       >
         <div className={style.icon}>
-          <NodeIcon type={data.nodeType} />
+          <NodeIcon type={displayLabel(data.nodeType)} />
         </div>
       </div>
       <p className="mt-2 text-center text-[11px] font-semibold text-slate-100 leading-tight">{data.code}</p>
@@ -324,7 +325,7 @@ function SupplyNodeClassic({ data }: { data: GraphNodeData }) {
       )}
       style={{ borderLeftColor: color, borderLeftWidth: 4 }}
     >
-      <p className="text-[10px] font-medium text-slate-400 uppercase">{data.nodeType}</p>
+      <p className="text-[10px] font-medium text-slate-400 uppercase">{displayLabel(data.nodeType)}</p>
       <p className="text-sm font-semibold text-slate-800">{data.code}</p>
       <p className="text-xs text-slate-500 truncate max-w-[140px]">{data.label}</p>
     </div>
@@ -397,7 +398,7 @@ export function SupplyChainGraph({
           className
         )}
       >
-        {variant === "propagation" ? "运行 GraphRAG 查询以展示供应链传播图" : "Run impact simulation to visualize the supply chain graph"}
+        {variant === "propagation" ? "运行 GraphRAG 查询以展示供应链传播图" : "运行影响模拟后查看供应链图谱"}
       </div>
     );
   }
@@ -419,6 +420,7 @@ export function SupplyChainGraph({
         </div>
       )}
       <ReactFlow
+        ariaLabelConfig={GRAPH_ARIA_LABELS}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}

@@ -1,5 +1,6 @@
 "use client";
 
+import { displayLabel } from "@/lib/labels";
 import { useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionCard } from "@/components/common/SectionCard";
@@ -27,21 +28,21 @@ export default function AuditPage() {
 
   return (
     <div>
-      <PageHeader title="Audit & Permission" description="RBAC matrix, security levels and permission denial events." />
+      <PageHeader title="审计与权限" description="查看 RBAC 权限矩阵、文档密级与权限拒绝事件。" />
       <div className="grid gap-6 lg:grid-cols-2">
-        <SectionCard title="Current Role">
+        <SectionCard title="当前角色">
           {user && <RoleBadge role={role} />}
-          <p className="mt-2 text-sm text-slate-600">Max security rank: {perms?.max_security_rank}</p>
+          <p className="mt-2 text-sm text-slate-600">最高可访问密级：{perms?.max_security_rank}</p>
           <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
             {Object.entries(matrix).map(([feat, ok]) => (
               <div key={feat} className="flex justify-between rounded bg-slate-50 px-3 py-2">
-                <span>{feat}</span>
+                <span>{displayLabel(feat)}</span>
                 <PermissionDecisionBadge decision={ok ? "allowed" : "denied"} />
               </div>
             ))}
           </div>
         </SectionCard>
-        <SectionCard title="Recent Audit Logs">
+        <SectionCard title="最近审计日志">
           <div className="max-h-96 overflow-y-auto space-y-2">
             {(audit?.items || []).map((item) => (
               <div key={item.id} className="rounded border border-slate-100 p-2 text-xs">

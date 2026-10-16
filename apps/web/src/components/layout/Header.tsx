@@ -1,5 +1,6 @@
 "use client";
 
+import { displayLabel } from "@/lib/labels";
 import { useRouter } from "next/navigation";
 import { LogOut, Server } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -27,7 +28,7 @@ export function Header() {
           <Server className="h-4 w-4" />
           API:{" "}
           <span className={health?.status === "ok" ? "text-green-600" : "text-amber-600"}>
-            {health?.status || "…"}
+            {health ? displayLabel(health.status) : "检查中…"}
           </span>
         </span>
         {llm?.model && (
@@ -35,7 +36,7 @@ export function Header() {
             LLM: {llm.provider || "deepseek"} / {llm.model}
           </span>
         )}
-        <span className="hidden lg:inline rounded bg-slate-100 px-2 py-0.5 text-xs">development</span>
+        <span className="hidden lg:inline rounded bg-slate-100 px-2 py-0.5 text-xs">开发环境</span>
       </div>
       <div className="flex items-center gap-3">
         {user && (
@@ -52,7 +53,7 @@ export function Header() {
                 router.push("/login");
               }}
               className="rounded-lg border border-slate-200 p-2 text-slate-500 hover:bg-slate-50 hover:text-slate-700"
-              title="Logout"
+              title="退出登录"
             >
               <LogOut className="h-4 w-4" />
             </button>

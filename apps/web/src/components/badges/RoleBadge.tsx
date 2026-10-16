@@ -1,3 +1,4 @@
+import { displayLabel } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
 const variants: Record<string, string> = {
@@ -20,7 +21,7 @@ export function RoleBadge({ role, className }: { role: string; className?: strin
         className
       )}
     >
-      {role.replace(/_/g, " ")}
+      {displayLabel(role)}
     </span>
   );
 }

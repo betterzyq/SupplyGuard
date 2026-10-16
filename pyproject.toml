@@ -35,10 +35,18 @@ dependencies = [
     "rank-bm25>=0.2.2",
     "redis>=8.0.0",
     "sqlalchemy>=2.0.51",
+    "socksio>=1.0.0",
     "tenacity>=9.1.4",
     "tiktoken>=0.13.0",
     "uvicorn[standard]>=0.49.0",
 ]
+
+[build-system]
+requires = ["setuptools>=82.0.1"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["apps*", "packages*"]
 
 [dependency-groups]
 dev = [

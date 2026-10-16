@@ -19,7 +19,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   if (!token && !user) {
     return (
       <div className="flex min-h-screen items-center justify-center text-slate-500">
-        Loading…
+        加载中…
       </div>
     );
   }

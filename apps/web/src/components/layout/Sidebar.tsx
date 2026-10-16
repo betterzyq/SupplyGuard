@@ -20,19 +20,19 @@ import {
 import { cn } from "@/lib/utils";
 
 const nav = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/supply-chain", label: "Supply Chain Map", icon: Map },
-  { href: "/risk-events", label: "Risk Events", icon: Activity },
+  { href: "/dashboard", label: "总览", icon: LayoutDashboard },
+  { href: "/supply-chain", label: "供应链图谱", icon: Map },
+  { href: "/risk-events", label: "风险事件", icon: Activity },
   { href: "/rag", label: "Secure RAG", icon: Shield },
   { href: "/graphrag", label: "GraphRAG", icon: Network },
-  { href: "/agent", label: "Agent Workflow", icon: Bot },
-  { href: "/memory", label: "Memory", icon: Brain },
-  { href: "/benchmarks", label: "Benchmarks", icon: BarChart3 },
-  { href: "/traces", label: "Observability", icon: GitBranch },
-  { href: "/tools", label: "MCP Tools", icon: Wrench },
-  { href: "/documents", label: "Documents", icon: FileText },
-  { href: "/audit", label: "Audit Logs", icon: ScrollText },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/agent", label: "Agent 工作流", icon: Bot },
+  { href: "/memory", label: "记忆管理", icon: Brain },
+  { href: "/benchmarks", label: "基准评测", icon: BarChart3 },
+  { href: "/traces", label: "链路追踪", icon: GitBranch },
+  { href: "/tools", label: "MCP 工具", icon: Wrench },
+  { href: "/documents", label: "文档管理", icon: FileText },
+  { href: "/audit", label: "审计日志", icon: ScrollText },
+  { href: "/settings", label: "设置", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -46,7 +46,7 @@ export function Sidebar() {
           </div>
           <div>
             <p className="font-semibold text-slate-900 leading-tight">SupplyGuard</p>
-            <p className="text-[10px] text-slate-500 leading-tight">Risk & Agent Harness</p>
+            <p className="text-[10px] text-slate-500 leading-tight">供应链风险与决策</p>
           </div>
         </div>
       </div>

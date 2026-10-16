@@ -3,8 +3,8 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
-  title: "SupplyGuard — Supply Chain Risk & Agent Harness",
-  description: "Secure RAG + GraphRAG + Agent Workflow for supply chain risk decisions",
+  title: "SupplyGuard — 供应链风险与采购决策平台",
+  description: "融合 Secure RAG、GraphRAG 与 Agent 工作流，支持供应链风险分析与采购决策",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

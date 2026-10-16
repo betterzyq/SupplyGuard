@@ -1,5 +1,6 @@
 "use client";
 
+import { displayLabel, actionLabel, graphPathLabel } from "@/lib/labels";
 import { useState } from "react";
 import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
@@ -35,29 +36,29 @@ export default function SupplyChainPage() {
   return (
     <div className="flex h-[calc(100vh-7rem)] flex-col">
       <PageHeader
-        title="Supply Chain Map"
-        description="Visualize risk propagation across suppliers, materials, products, orders and customers."
+        title="供应链图谱"
+        description="可视化查看风险在供应商、物料、产品、订单和客户之间的传播路径。"
       />
 
       <div className="flex flex-1 gap-4 min-h-0">
         {/* Left control panel */}
         <div className="w-72 shrink-0 space-y-4 overflow-y-auto">
-          <SectionCard title="Risk Simulation" description="Configure impact source">
+          <SectionCard title="风险模拟" description="设置风险源与影响条件">
             <div className="space-y-3 text-sm">
               <div>
-                <label className="text-xs font-medium text-slate-500">Source node type</label>
+                <label className="text-xs font-medium text-slate-500">风险源节点类型</label>
                 <select
                   value={sourceType}
                   onChange={(e) => setSourceType(e.target.value)}
                   className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5"
                 >
-                  <option value="supplier">Supplier</option>
-                  <option value="material">Material</option>
-                  <option value="product">Product</option>
+                  <option value="supplier">供应商</option>
+                  <option value="material">物料</option>
+                  <option value="product">产品</option>
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Entity code</label>
+                <label className="text-xs font-medium text-slate-500">实体编码</label>
                 <select
                   value={sourceCode}
                   onChange={(e) => setSourceCode(e.target.value)}
@@ -71,29 +72,29 @@ export default function SupplyChainPage() {
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Risk type</label>
+                <label className="text-xs font-medium text-slate-500">风险类型</label>
                 <select
                   value={riskType}
                   onChange={(e) => setRiskType(e.target.value)}
                   className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5"
                 >
-                  <option value="delivery_delay">Delivery delay</option>
-                  <option value="quality_failure">Quality failure</option>
-                  <option value="financial_risk">Financial risk</option>
-                  <option value="compliance_risk">Compliance risk</option>
+                  <option value="delivery_delay">交付延误</option>
+                  <option value="quality_failure">质量异常</option>
+                  <option value="financial_risk">财务风险</option>
+                  <option value="compliance_risk">合规风险</option>
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Severity</label>
+                <label className="text-xs font-medium text-slate-500">严重程度</label>
                 <select
                   value={severity}
                   onChange={(e) => setSeverity(e.target.value)}
                   className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5"
                 >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="critical">Critical</option>
+                  <option value="low">低</option>
+                  <option value="medium">中</option>
+                  <option value="high">高</option>
+                  <option value="critical">严重</option>
                 </select>
               </div>
               <button
@@ -103,7 +104,7 @@ export default function SupplyChainPage() {
                 className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand-600 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
               >
                 {simulation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
-                Run Impact Simulation
+                运行影响模拟
               </button>
             </div>
           </SectionCard>
@@ -128,14 +129,14 @@ export default function SupplyChainPage() {
 
           {/* Agent actions */}
           {result?.agent_actions && (
-            <SectionCard title="Agent Recommended Actions">
+            <SectionCard title="Agent 建议措施">
               <div className="grid gap-2 sm:grid-cols-2">
                 {(result.agent_actions as { action: string; agent: string; permission: string; status: string }[]).map(
                   (a, i) => (
                     <div key={i} className="rounded-lg border border-slate-100 bg-slate-50 p-3 text-sm">
-                      <p className="font-medium text-slate-800">{a.action}</p>
+                      <p className="font-medium text-slate-800">{actionLabel(a.action)}</p>
                       <p className="text-xs text-slate-500 mt-1">
-                        {a.agent} · {a.permission} · {a.status}
+                        {displayLabel(a.agent)} · {displayLabel(a.permission)} · {displayLabel(a.status)}
                       </p>
                     </div>
                   )
@@ -147,15 +148,15 @@ export default function SupplyChainPage() {
 
         {/* Right impact panel */}
         <div className="w-80 shrink-0 space-y-4 overflow-y-auto">
-          <SectionCard title="Impact Analysis">
+          <SectionCard title="影响分析">
             {!result ? (
-              <p className="text-sm text-slate-400">Run simulation to see impact analysis</p>
+              <p className="text-sm text-slate-400">运行模拟后查看影响分析</p>
             ) : (
               <div className="space-y-4 text-sm">
                 <div>
-                  <p className="text-xs text-slate-500">Risk source</p>
+                  <p className="text-xs text-slate-500">风险源</p>
                   <p className="font-medium">
-                    {(result.risk_source as { node_type: string; node_code: string }).node_type}{" "}
+                    {displayLabel((result.risk_source as { node_type: string; node_code: string }).node_type)}{" "}
                     {(result.risk_source as { node_code: string }).node_code}
                   </p>
                 </div>
@@ -167,13 +168,13 @@ export default function SupplyChainPage() {
                     </Link>
                   )}
                 </div>
-                <p className="text-xs text-slate-500">Latency: {formatLatency(result.latency_ms as number)}</p>
+                <p className="text-xs text-slate-500">响应耗时：{formatLatency(result.latency_ms as number)}</p>
                 {[
-                  ["Materials", result.affected_materials],
-                  ["Products", result.affected_products],
-                  ["Orders", result.affected_orders],
-                  ["Customers", result.affected_customers],
-                  ["Alternatives", result.alternative_suppliers],
+                  ["受影响物料", result.affected_materials],
+                  ["受影响产品", result.affected_products],
+                  ["受影响订单", result.affected_orders],
+                  ["受影响客户", result.affected_customers],
+                  ["替代供应商", result.alternative_suppliers],
                 ].map(([label, items]) => (
                   <div key={label as string}>
                     <p className="text-xs font-medium text-slate-500">{label as string}</p>
@@ -191,11 +192,11 @@ export default function SupplyChainPage() {
                   </div>
                 ))}
                 <div>
-                  <p className="text-xs font-medium text-slate-500 mb-2">Impact paths</p>
+                  <p className="text-xs font-medium text-slate-500 mb-2">影响路径</p>
                   {((result.impacted_paths as { path_text: string; hop_count: number }[]) || []).map((p, i) => (
                     <div key={i} className="mb-2 rounded bg-slate-50 p-2 text-xs">
-                      <p className="text-slate-700">{p.path_text}</p>
-                      <p className="text-slate-400 mt-0.5">{p.hop_count} hops</p>
+                      <p className="text-slate-700">{graphPathLabel(p.path_text)}</p>
+                      <p className="text-slate-400 mt-0.5">{p.hop_count} 跳</p>
                     </div>
                   ))}
                 </div>

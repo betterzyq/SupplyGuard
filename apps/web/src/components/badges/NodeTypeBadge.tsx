@@ -1,3 +1,4 @@
+import { displayLabel } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
 const colors: Record<string, string> = {
@@ -14,7 +15,7 @@ const colors: Record<string, string> = {
 export function NodeTypeBadge({ type }: { type: string }) {
   return (
     <span className={cn("rounded border px-2 py-0.5 text-xs font-medium", colors[type] || "bg-slate-100")}>
-      {type}
+      {displayLabel(type)}
     </span>
   );
 }

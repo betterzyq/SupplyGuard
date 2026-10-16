@@ -1,3 +1,4 @@
+import { displayLabel } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
 const colors: Record<string, string> = {
@@ -10,7 +11,7 @@ const colors: Record<string, string> = {
 export function PermissionDecisionBadge({ decision }: { decision: string }) {
   return (
     <span className={cn("rounded-full border px-2 py-0.5 text-xs font-medium", colors[decision] || "bg-slate-100")}>
-      {decision}
+      {displayLabel(decision)}
     </span>
   );
 }
