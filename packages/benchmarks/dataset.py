@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -19,7 +18,14 @@ def normalize_supplier_code(code: str) -> str:
 
 
 def normalize_entity_list(entities: list[str]) -> list[str]:
-    return [normalize_supplier_code(e) if e.upper().startswith("S") and "-" not in e else e.upper() for e in entities]
+    return [
+        (
+            normalize_supplier_code(e)
+            if e.upper().startswith("S") and "-" not in e
+            else e.upper()
+        )
+        for e in entities
+    ]
 
 
 @dataclass
@@ -43,6 +49,9 @@ class EvalQuestion:
     follow_up_session_id: str | None = None
     user_email: str | None = None
     session_seed: list[dict[str, str]] = field(default_factory=list)
+    gold_spans: list[dict[str, str]] = field(default_factory=list)
+    dataset_version: str = "legacy-v1"
+    policy_version: str = "legacy-roles"
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> EvalQuestion:
@@ -57,6 +66,9 @@ class EvalQuestion:
 
         return cls(
             id=str(data["id"]),
+            gold_spans=list(data.get("gold_spans") or []),
+            dataset_version=data.get("dataset_version", "legacy-v1"),
+            policy_version=data.get("policy_version", "legacy-roles"),
             question=data["question"],
             user_role=data.get("user_role", "procurement_manager"),
             expected_mode=data.get("expected_mode", "secure_rag"),
@@ -80,6 +92,9 @@ class EvalQuestion:
     def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
+            "gold_spans": self.gold_spans,
+            "dataset_version": self.dataset_version,
+            "policy_version": self.policy_version,
             "question": self.question,
             "user_role": self.user_role,
             "expected_mode": self.expected_mode,
@@ -114,7 +129,12 @@ def _infer_question_type(data: dict[str, Any]) -> str:
 
 
 def default_dataset_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "data" / "eval" / "supplyguard_eval.jsonl"
+    return (
+        Path(__file__).resolve().parents[2]
+        / "data"
+        / "eval"
+        / "rag-enterprise-v2.jsonl"
+    )
 
 
 def load_dataset(path: Path | None = None) -> list[EvalQuestion]:
@@ -139,11 +159,22 @@ def filter_questions(
 ) -> list[EvalQuestion]:
     filtered = items
     if mode == "secure_rag" or mode == "naive_rag":
-        filtered = [q for q in filtered if q.expected_mode in {"secure_rag", "rag", "hybrid"} and not q.requires_graph]
+        filtered = [
+            q
+            for q in filtered
+            if q.expected_mode in {"secure_rag", "rag", "hybrid"}
+            and not q.requires_graph
+        ]
     elif mode == "graphrag":
-        filtered = [q for q in filtered if q.requires_graph or q.expected_mode == "graphrag"]
+        filtered = [
+            q for q in filtered if q.requires_graph or q.expected_mode == "graphrag"
+        ]
     elif mode == "memory":
-        filtered = [q for q in filtered if q.requires_memory or q.question_type == "memory_followup"]
+        filtered = [
+            q
+            for q in filtered
+            if q.requires_memory or q.question_type == "memory_followup"
+        ]
     elif mode == "permission":
         filtered = [q for q in filtered if q.requires_permission or q.should_be_blocked]
     if question_types:

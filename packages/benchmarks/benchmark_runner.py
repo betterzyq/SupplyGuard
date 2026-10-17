@@ -19,7 +19,12 @@ from packages.benchmarks.benchmark_repo import (
     get_benchmark_run,
     list_benchmark_results,
 )
-from packages.benchmarks.dataset import EvalQuestion, default_dataset_path, filter_questions, load_dataset
+from packages.benchmarks.dataset import (
+    EvalQuestion,
+    default_dataset_path,
+    filter_questions,
+    load_dataset,
+)
 from packages.benchmarks.evaluators import ROLE_EMAIL
 from packages.benchmarks.graphrag_benchmark import run_graphrag_benchmark_item
 from packages.benchmarks.memory_benchmark import run_memory_benchmark_item
@@ -27,7 +32,7 @@ from packages.benchmarks.metrics import aggregate_metrics
 from packages.benchmarks.permission_benchmark import run_permission_benchmark_item
 from packages.benchmarks.rag_benchmark import run_rag_benchmark_item
 from packages.benchmarks.report_generator import export_reports
-from packages.observability.trace_context import get_trace_id, resolve_trace_id, set_trace_id
+from packages.observability.trace_context import resolve_trace_id, set_trace_id
 from packages.common.db.models.benchmark import BenchmarkRun
 from packages.common.db.models.role import UserRole
 from packages.common.db.models.user import User
@@ -60,12 +65,16 @@ class BenchmarkConfig:
             permission_filter=bool(config.get("permission_filter", True)),
             memory=bool(config.get("memory", False)),
             question_types=list(data.get("question_types") or []),
-            dataset_path=Path(data["dataset_path"]) if data.get("dataset_path") else None,
+            dataset_path=(
+                Path(data["dataset_path"]) if data.get("dataset_path") else None
+            ),
             export_reports=bool(data.get("export_reports", True)),
         )
 
 
-async def load_user_context_for_question(session: AsyncSession, question: EvalQuestion) -> UserContext:
+async def load_user_context_for_question(
+    session: AsyncSession, question: EvalQuestion, tenant_id: uuid.UUID | None = None
+) -> UserContext:
     email = question.user_email or ROLE_EMAIL.get(question.user_role)
     if not email:
         raise ValueError(f"Unknown role: {question.user_role}")
@@ -74,6 +83,8 @@ async def load_user_context_for_question(session: AsyncSession, question: EvalQu
         .where(User.email == email, User.is_active.is_(True))
         .options(selectinload(User.user_roles).selectinload(UserRole.role))
     )
+    if tenant_id is not None:
+        stmt = stmt.where(User.tenant_id == tenant_id)
     user = (await session.execute(stmt)).scalar_one_or_none()
     if user is None:
         raise ValueError(f"User not found for email={email}")
@@ -91,7 +102,13 @@ async def load_user_context_for_question(session: AsyncSession, question: EvalQu
 async def load_admin_context(session: AsyncSession) -> UserContext:
     return await load_user_context_for_question(
         session,
-        EvalQuestion(id="admin", question="", user_role="admin", expected_mode="secure_rag", question_type="general"),
+        EvalQuestion(
+            id="admin",
+            question="",
+            user_role="admin",
+            expected_mode="secure_rag",
+            question_type="general",
+        ),
     )
 
 
@@ -99,11 +116,18 @@ async def run_single_question(
     session: AsyncSession,
     question: EvalQuestion,
     config: BenchmarkConfig,
+    tenant_id: uuid.UUID,
 ) -> dict[str, Any]:
-    user_context = await load_user_context_for_question(session, question)
+    user_context = await load_user_context_for_question(session, question, tenant_id)
     mode = config.mode
 
-    if mode in {"secure_rag", "naive_rag", "hybrid_rag", "secure_rag_memory", "hybrid_rag_memory"}:
+    if mode in {
+        "secure_rag",
+        "naive_rag",
+        "hybrid_rag",
+        "secure_rag_memory",
+        "hybrid_rag_memory",
+    }:
         if mode == "naive_rag":
             permission_filter = False
         elif mode in {"secure_rag_memory", "hybrid_rag_memory"}:
@@ -122,7 +146,9 @@ async def run_single_question(
             permission_filter=permission_filter,
         )
     if mode == "graphrag":
-        return await run_graphrag_benchmark_item(session, user_context, question, top_k=config.top_k)
+        return await run_graphrag_benchmark_item(
+            session, user_context, question, top_k=config.top_k
+        )
     if mode == "memory":
         return await run_memory_benchmark_item(session, user_context, question)
     if mode == "permission":
@@ -148,7 +174,15 @@ async def run_benchmark(
     target_run: BenchmarkRun | None = None,
 ) -> dict[str, Any]:
     dataset = load_dataset(config.dataset_path or default_dataset_path())
-    questions = filter_questions(dataset, mode=None if config.mode == "all" else config.mode, question_types=config.question_types or None)
+    if not config.dry_run and any(q.policy_version != "enterprise-v2" for q in dataset):
+        raise ValueError(
+            "Legacy role gold is deprecated; use reviewed enterprise-v2 annotations"
+        )
+    questions = filter_questions(
+        dataset,
+        mode=None if config.mode == "all" else config.mode,
+        question_types=config.question_types or None,
+    )
     if config.limit is not None:
         questions = questions[: config.limit]
 
@@ -168,7 +202,9 @@ async def run_benchmark(
     container_run = target_run
 
     for mode in modes:
-        mode_questions = filter_questions(dataset, mode=mode, question_types=config.question_types or None)
+        mode_questions = filter_questions(
+            dataset, mode=mode, question_types=config.question_types or None
+        )
         if config.limit is not None:
             mode_questions = mode_questions[: config.limit]
         if not mode_questions:
@@ -201,7 +237,8 @@ async def run_benchmark(
                     "chunk_size": mode_config.chunk_size,
                     "permission_filter": mode_config.permission_filter,
                     "memory": mode_config.memory,
-                    "unsafe_baseline": not mode_config.permission_filter or mode == "naive_rag",
+                    "unsafe_baseline": not mode_config.permission_filter
+                    or mode == "naive_rag",
                 },
                 trace_id=primary_trace_id,
             )
@@ -209,11 +246,15 @@ async def run_benchmark(
         mode_rows: list[dict[str, Any]] = []
 
         for question in mode_questions:
-            outcome = await run_single_question(session, question, mode_config)
+            outcome = await run_single_question(
+                session, question, mode_config, admin_context.tenant_id
+            )
             metrics = dict(outcome.get("metrics") or {})
             metrics["latency_ms"] = outcome.get("latency_ms", 0)
             metrics["question_type"] = question.question_type
             metrics["question_id"] = question.id
+            metrics["dataset_version"] = question.dataset_version
+            metrics["policy_version"] = question.policy_version
             token_usage = outcome.get("token_usage") or {}
             metrics["token_usage_total"] = int(token_usage.get("total_tokens", 0) or 0)
 
@@ -235,7 +276,11 @@ async def run_benchmark(
                 error=outcome.get("error"),
                 trace_id=primary_trace_id,
             )
-            row = {"question_id": question.id, "question_type": question.question_type, **metrics}
+            row = {
+                "question_id": question.id,
+                "question_type": question.question_type,
+                **metrics,
+            }
             mode_rows.append(row)
             all_rows.append(row)
 
@@ -245,7 +290,9 @@ async def run_benchmark(
             summary["unsafe_baseline"] = True
 
         await finalize_benchmark_run(session, run, status="completed", summary=summary)
-        if mode_config.export_reports and (target_run is None or run.id != target_run.id or len(modes) == 1):
+        if mode_config.export_reports and (
+            target_run is None or run.id != target_run.id or len(modes) == 1
+        ):
             results = await list_benchmark_results(session, run.id)
             export_reports(run, results, summary)
 
@@ -254,7 +301,9 @@ async def run_benchmark(
     combined_summary["trace_id"] = primary_trace_id
 
     if config.mode == "all" and container_run is not None:
-        await finalize_benchmark_run(session, container_run, status="completed", summary=combined_summary)
+        await finalize_benchmark_run(
+            session, container_run, status="completed", summary=combined_summary
+        )
         primary_run_id = container_run.id
     elif target_run is not None and target_run.status == "running" and not all_rows:
         await finalize_benchmark_run(
@@ -266,7 +315,9 @@ async def run_benchmark(
         )
         primary_run_id = target_run.id
     else:
-        primary_run_id = run_ids[-1] if run_ids else (container_run.id if container_run else None)
+        primary_run_id = (
+            run_ids[-1] if run_ids else (container_run.id if container_run else None)
+        )
 
     return {
         "benchmark_run_id": str(primary_run_id) if primary_run_id else None,
@@ -285,7 +336,9 @@ def _group_metrics(rows: list[dict[str, Any]], key: str) -> dict[str, Any]:
     return {name: aggregate_metrics(group_rows) for name, group_rows in groups.items()}
 
 
-async def get_run_detail(session: AsyncSession, run_id: uuid.UUID) -> dict[str, Any] | None:
+async def get_run_detail(
+    session: AsyncSession, run_id: uuid.UUID
+) -> dict[str, Any] | None:
     run = await get_benchmark_run(session, run_id)
     if run is None:
         return None

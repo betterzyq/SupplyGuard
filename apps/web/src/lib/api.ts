@@ -37,7 +37,7 @@ apiClient.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // --- Types ---
@@ -137,7 +137,12 @@ export interface TraceDetail {
   benchmark_results: Record<string, unknown>[];
   benchmark_runs: Record<string, unknown>[];
   node_spans: Record<string, unknown>[];
-  timeline: { type: string; name: string; latency_ms?: number; status?: string }[];
+  timeline: {
+    type: string;
+    name: string;
+    latency_ms?: number;
+    status?: string;
+  }[];
   summary: Record<string, unknown>;
 }
 
@@ -200,15 +205,24 @@ export interface AuditLogItem {
 }
 
 export interface DashboardSummary {
-  health: { status: string; dependencies: Record<string, { status: string; model?: string }> };
+  health: {
+    status: string;
+    dependencies: Record<string, { status: string; model?: string }>;
+  };
   benchmark_snapshot: Record<string, unknown> | null;
   audit_stats: { total: number; denied_count: number };
   capability_status: Record<string, string>;
 }
 
 // --- Auth ---
-export async function login(email: string, password: string): Promise<LoginResponse> {
-  const { data } = await apiClient.post<LoginResponse>("/auth/login", { email, password });
+export async function login(
+  email: string,
+  password: string,
+): Promise<LoginResponse> {
+  const { data } = await apiClient.post<LoginResponse>("/auth/login", {
+    email,
+    password,
+  });
   return data;
 }
 
@@ -218,7 +232,9 @@ export async function getMe(): Promise<UserInfo> {
 }
 
 export async function getPermissions(): Promise<PermissionsResponse> {
-  const { data } = await apiClient.get<PermissionsResponse>("/users/me/permissions");
+  const { data } = await apiClient.get<PermissionsResponse>(
+    "/users/me/permissions",
+  );
   return data;
 }
 
@@ -230,7 +246,10 @@ export async function getHealth(): Promise<{ status: string }> {
 
 export async function getHealthDependencies(): Promise<{
   status: string;
-  dependencies: Record<string, { status: string; model?: string; provider?: string }>;
+  dependencies: Record<
+    string,
+    { status: string; model?: string; provider?: string }
+  >;
 }> {
   const { data } = await axios.get(apiBaseUrl("/health/dependencies"));
   return data;
@@ -260,7 +279,10 @@ export async function graphragQuery(body: {
   entity_code?: string | null;
   top_k?: number;
 }): Promise<GraphRAGResponse> {
-  const { data } = await apiClient.post<GraphRAGResponse>("/graphrag/query", body);
+  const { data } = await apiClient.post<GraphRAGResponse>(
+    "/graphrag/query",
+    body,
+  );
   return data;
 }
 
@@ -316,13 +338,21 @@ export async function callTool(body: {
 }
 
 // --- Benchmarks ---
-export async function listBenchmarkRuns(limit = 20): Promise<BenchmarkRunItem[]> {
-  const { data } = await apiClient.get<BenchmarkRunItem[]>("/benchmarks/runs", { params: { limit } });
+export async function listBenchmarkRuns(
+  limit = 20,
+): Promise<BenchmarkRunItem[]> {
+  const { data } = await apiClient.get<BenchmarkRunItem[]>("/benchmarks/runs", {
+    params: { limit },
+  });
   return data;
 }
 
-export async function getBenchmarkRun(runId: string): Promise<BenchmarkRunItem> {
-  const { data } = await apiClient.get<BenchmarkRunItem>(`/benchmarks/runs/${runId}`);
+export async function getBenchmarkRun(
+  runId: string,
+): Promise<BenchmarkRunItem> {
+  const { data } = await apiClient.get<BenchmarkRunItem>(
+    `/benchmarks/runs/${runId}`,
+  );
   return data;
 }
 
@@ -331,16 +361,25 @@ export async function getBenchmarkResults(runId: string) {
   return data;
 }
 
-export async function runBenchmark(body: BenchmarkRunRequest): Promise<BenchmarkRunResponse> {
-  const { data } = await apiClient.post<BenchmarkRunResponse>("/benchmarks/run", body, {
-    timeout: 60000,
-  });
+export async function runBenchmark(
+  body: BenchmarkRunRequest,
+): Promise<BenchmarkRunResponse> {
+  const { data } = await apiClient.post<BenchmarkRunResponse>(
+    "/benchmarks/run",
+    body,
+    {
+      timeout: 60000,
+    },
+  );
   return data;
 }
 
 // --- Audit ---
 export async function listAuditLogs(limit = 50, offset = 0) {
-  const { data } = await apiClient.get<{ items: AuditLogItem[]; total: number }>("/admin/audit-logs", {
+  const { data } = await apiClient.get<{
+    items: AuditLogItem[];
+    total: number;
+  }>("/admin/audit-logs", {
     params: { limit, offset },
   });
   return data;
@@ -369,14 +408,8 @@ export async function runImpactSimulation(body: {
 }
 
 export const SEED_USERS = [
-  { email: "admin@example.com", role: "admin", label: "管理员" },
-  { email: "procurement_manager@example.com", role: "procurement_manager", label: "采购经理" },
-  { email: "procurement_staff@example.com", role: "procurement_staff", label: "采购专员" },
-  { email: "logistics_manager@example.com", role: "logistics_manager", label: "物流经理" },
-  { email: "finance_manager@example.com", role: "finance_manager", label: "财务经理" },
-  { email: "quality_manager@example.com", role: "quality_manager", label: "质量经理" },
-  { email: "executive@example.com", role: "executive", label: "管理层" },
-  { email: "supplier@example.com", role: "external_supplier", label: "外部供应商" },
+  { email: "enterprise@example.com", role: "enterprise", label: "企业用户" },
+  { email: "admin@example.com", role: "admin", label: "管理员（开发人员）" },
 ] as const;
 
 export const DEMO_SCENARIOS = [

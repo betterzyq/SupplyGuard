@@ -1,5 +1,7 @@
 # SupplyGuard 无 Docker 本地环境
 
+产品升级 P1/P2/P3 请优先参考 [文档入口](docs/README.md) 与 [人工验收手册](docs/manual-acceptance.md)。专用验收服务使用 `make acceptance-up`（8100/3100），通过 `make acceptance-down` 安全关闭。不要执行原 `make seed` 重置已有数据。下文保留原始环境部署记录。
+
 当前服务器使用独立 Conda 环境 `supplyguard`。Python 3.11.17、uv、
 Node.js 22.21.1、npm 和后端开发依赖已安装；前端依赖按
 `apps/web/package-lock.json` 安装到该目录的 `node_modules`。
@@ -125,3 +127,36 @@ cd apps/web
 CIRCLE_NODE_TOTAL=3 NEXT_TELEMETRY_DISABLED=1 OMP_NUM_THREADS=2 \
   taskset -c 0,1 nice -n 10 npm run build
 ```
+
+## P4 预测验证验收
+
+本机专属环境与DataCo数据已就绪时，使用 `.venv/bin/python` 对应的Make目标，不运行 `uv sync`、旧seed或全局安装：
+
+```bash
+make phase4-data-check
+make phase4-check
+make phase4-audit
+make acceptance-status
+make phase4-smoke
+make phase4-browser
+```
+
+服务未启动才需 `make acceptance-up`；源码更新后按 `acceptance-down` → `acceptance-up` 刷新本项目专用验收进程。独立复训使用 `make phase4-reproduce`，然后 `make phase4-audit`。完整隔离要求、环境锁和人工步骤见 [P4数据卡](docs/prediction-data-card.md)、[人工验收](docs/manual-acceptance.md) 与 [实测报告](docs/reports/phase-4.md)。公开历史模型不能直接用于制造订单风险预测。
+
+## P5 企业数据与处置验收
+
+当前环境已应用仅新增表的P5迁移，迁移前备份已在独立库实际恢复验证；不要运行旧seed。使用：
+
+```bash
+make phase5-check
+make acceptance-status
+make phase5-smoke
+make phase5-browser
+make phase5-audit
+```
+
+`phase5-check`只在自己新建的隔离库测试迁移，日常不会重建项目库。若未来新副本尚未应用P5，应先通过该检查，再用`make phase5-db-apply`执行有备份保护的新增迁移。完整说明见[迁移与恢复](docs/phase5-migrations.md)、[人工验收P5](docs/manual-acceptance.md)、[企业API](docs/workspace-api.md)。
+
+## P6 最终交付入口
+
+P1—P5已人工验收。当前验收使用8100/3100；`make acceptance-status`查看并按提示转发3100。最终验证依次执行`make phase6-check`、`make acceptance-up`、`make phase6-smoke`、`make phase6-browser`、`make phase6-regression`、`make phase6-audit`。具体运行/故障/备份回退见[运行手册](docs/operations.md)，三场景与商业说明分别在`/showcase`、`/value`。未引入新依赖/DDL，不重建.env或.venv。

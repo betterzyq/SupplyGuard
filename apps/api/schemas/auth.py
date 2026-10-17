@@ -27,6 +27,7 @@ class LoginResponse(BaseModel):
 
 
 class PermissionsResponse(BaseModel):
+    policy_version: str = "enterprise-v2"
     roles: list[str]
     max_security_rank: int
     can_access_admin: bool

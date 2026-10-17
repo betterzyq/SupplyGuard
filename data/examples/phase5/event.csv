@@ -1,0 +1,2 @@
+﻿code,name,site_codes,order_codes,severity,description,detected_at
+EVENT-NEW,示例异常,SITE-NEW,ORDER-NEW,high,供给异常，待人工核实,2026-10-17T09:00:00+08:00

@@ -1,0 +1,427 @@
+{
+  "dataset_version": "enterprise-eval-v2",
+  "policy_version": "enterprise-v2",
+  "scorer_version": "enterprise-scorer-v2",
+  "purpose": "offline scorer/policy contracts; seed-derived graph gold, not live retrieval quality or LLM answer accuracy",
+  "seed_sha256": "665bb673fee017d12824ef52246a0fe1a38ab239a5170daa3a322d81f25d417e",
+  "cases": [
+    {
+      "id": "impact-SUP-001",
+      "kind": "graph_gold",
+      "query_type": "supplier_impact",
+      "entity_code": "SUP-001",
+      "gold_graph_paths": [
+        [
+          "Supplier:SUP-001",
+          "Material:M001",
+          "Product:P001",
+          "Order:PO-2024-0001",
+          "Customer:C001"
+        ],
+        [
+          "Supplier:SUP-001",
+          "Material:M001",
+          "Product:P001",
+          "Order:PO-2024-0004",
+          "Customer:C002"
+        ],
+        [
+          "Supplier:SUP-001",
+          "Material:M001",
+          "Product:P001",
+          "Order:PO-2024-0007",
+          "Customer:C001"
+        ],
+        [
+          "Supplier:SUP-001",
+          "Material:M002",
+          "Product:P001",
+          "Order:PO-2024-0001",
+          "Customer:C001"
+        ],
+        [
+          "Supplier:SUP-001",
+          "Material:M002",
+          "Product:P001",
+          "Order:PO-2024-0004",
+          "Customer:C002"
+        ],
+        [
+          "Supplier:SUP-001",
+          "Material:M002",
+          "Product:P001",
+          "Order:PO-2024-0007",
+          "Customer:C001"
+        ],
+        [
+          "Supplier:SUP-001",
+          "Material:M002",
+          "Product:P002",
+          "Order:PO-2024-0002",
+          "Customer:C001"
+        ],
+        [
+          "Supplier:SUP-001",
+          "Material:M002",
+          "Product:P002",
+          "Order:PO-2024-0006",
+          "Customer:C003"
+        ]
+      ]
+    },
+    {
+      "id": "impact-SUP-002",
+      "kind": "graph_gold",
+      "query_type": "supplier_impact",
+      "entity_code": "SUP-002",
+      "gold_graph_paths": [
+        [
+          "Supplier:SUP-002",
+          "Material:M002",
+          "Product:P001",
+          "Order:PO-2024-0001",
+          "Customer:C001"
+        ],
+        [
+          "Supplier:SUP-002",
+          "Material:M002",
+          "Product:P001",
+          "Order:PO-2024-0004",
+          "Customer:C002"
+        ],
+        [
+          "Supplier:SUP-002",
+          "Material:M002",
+          "Product:P001",
+          "Order:PO-2024-0007",
+          "Customer:C001"
+        ],
+        [
+          "Supplier:SUP-002",
+          "Material:M002",
+          "Product:P002",
+          "Order:PO-2024-0002",
+          "Customer:C001"
+        ],
+        [
+          "Supplier:SUP-002",
+          "Material:M002",
+          "Product:P002",
+          "Order:PO-2024-0006",
+          "Customer:C003"
+        ],
+        [
+          "Supplier:SUP-002",
+          "Material:M003",
+          "Product:P003",
+          "Order:PO-2024-0003",
+          "Customer:C002"
+        ],
+        [
+          "Supplier:SUP-002",
+          "Material:M003",
+          "Product:P003",
+          "Order:PO-2024-0005",
+          "Customer:C003"
+        ],
+        [
+          "Supplier:SUP-002",
+          "Material:M003",
+          "Product:P003",
+          "Order:PO-2024-0008",
+          "Customer:C002"
+        ]
+      ]
+    },
+    {
+      "id": "impact-SUP-003",
+      "kind": "graph_gold",
+      "query_type": "supplier_impact",
+      "entity_code": "SUP-003",
+      "gold_graph_paths": [
+        [
+          "Supplier:SUP-003",
+          "Material:M004",
+          "Product:P003",
+          "Order:PO-2024-0003",
+          "Customer:C002"
+        ],
+        [
+          "Supplier:SUP-003",
+          "Material:M004",
+          "Product:P003",
+          "Order:PO-2024-0005",
+          "Customer:C003"
+        ],
+        [
+          "Supplier:SUP-003",
+          "Material:M004",
+          "Product:P003",
+          "Order:PO-2024-0008",
+          "Customer:C002"
+        ]
+      ]
+    },
+    {
+      "id": "impact-SUP-004",
+      "kind": "graph_gold",
+      "query_type": "supplier_impact",
+      "entity_code": "SUP-004",
+      "gold_graph_paths": [
+        [
+          "Supplier:SUP-004",
+          "Material:M001",
+          "Product:P001",
+          "Order:PO-2024-0001",
+          "Customer:C001"
+        ],
+        [
+          "Supplier:SUP-004",
+          "Material:M001",
+          "Product:P001",
+          "Order:PO-2024-0004",
+          "Customer:C002"
+        ],
+        [
+          "Supplier:SUP-004",
+          "Material:M001",
+          "Product:P001",
+          "Order:PO-2024-0007",
+          "Customer:C001"
+        ]
+      ]
+    },
+    {
+      "id": "delay-DE-001",
+      "kind": "graph_gold",
+      "query_type": "delivery_delay",
+      "entity_code": "SUP-001",
+      "gold_graph_paths": [
+        [
+          "Supplier:SUP-001",
+          "DeliveryEvent:DE-001",
+          "Order:PO-2024-0001"
+        ]
+      ]
+    },
+    {
+      "id": "delay-DE-002",
+      "kind": "graph_gold",
+      "query_type": "delivery_delay",
+      "entity_code": "SUP-003",
+      "gold_graph_paths": [
+        [
+          "Supplier:SUP-003",
+          "DeliveryEvent:DE-002",
+          "Order:PO-2024-0003"
+        ]
+      ]
+    },
+    {
+      "id": "alternative-SUP-001",
+      "kind": "graph_gold",
+      "query_type": "supplier_alternatives",
+      "entity_code": "SUP-001",
+      "gold_graph_paths": [
+        [
+          "Supplier:SUP-001",
+          "Supplier:SUP-004"
+        ]
+      ]
+    },
+    {
+      "id": "alternative-SUP-002",
+      "kind": "graph_gold",
+      "query_type": "supplier_alternatives",
+      "entity_code": "SUP-002",
+      "gold_graph_paths": [
+        [
+          "Supplier:SUP-002",
+          "Supplier:SUP-001"
+        ]
+      ]
+    },
+    {
+      "id": "policy-admin-same_tenant-document",
+      "kind": "policy",
+      "role": "admin",
+      "scope": "same_tenant",
+      "resource": "document",
+      "expected_decision": "allow"
+    },
+    {
+      "id": "policy-admin-other_tenant-document",
+      "kind": "policy",
+      "role": "admin",
+      "scope": "other_tenant",
+      "resource": "document",
+      "expected_decision": "denied"
+    },
+    {
+      "id": "policy-admin-same_tenant-admin",
+      "kind": "policy",
+      "role": "admin",
+      "scope": "same_tenant",
+      "resource": "admin",
+      "expected_decision": "allow"
+    },
+    {
+      "id": "policy-enterprise-same_tenant-document",
+      "kind": "policy",
+      "role": "enterprise",
+      "scope": "same_tenant",
+      "resource": "document",
+      "expected_decision": "allow"
+    },
+    {
+      "id": "policy-enterprise-other_tenant-document",
+      "kind": "policy",
+      "role": "enterprise",
+      "scope": "other_tenant",
+      "resource": "document",
+      "expected_decision": "denied"
+    },
+    {
+      "id": "policy-enterprise-same_tenant-admin",
+      "kind": "policy",
+      "role": "enterprise",
+      "scope": "same_tenant",
+      "resource": "admin",
+      "expected_decision": "denied"
+    },
+    {
+      "id": "path-supplier-prefix",
+      "kind": "path_scorer",
+      "found": [
+        "Supplier SUP-0011 → Material M001"
+      ],
+      "gold": [
+        [
+          "Supplier:SUP-001",
+          "Material:M001"
+        ]
+      ],
+      "expected": 0
+    },
+    {
+      "id": "path-partial",
+      "kind": "path_scorer",
+      "found": [
+        "Supplier SUP-001"
+      ],
+      "gold": [
+        [
+          "Supplier:SUP-001",
+          "Material:M001"
+        ]
+      ],
+      "expected": 0
+    },
+    {
+      "id": "path-reversed",
+      "kind": "path_scorer",
+      "found": [
+        "Material M001 → Supplier SUP-001"
+      ],
+      "gold": [
+        [
+          "Supplier:SUP-001",
+          "Material:M001"
+        ]
+      ],
+      "expected": 0
+    },
+    {
+      "id": "path-wrong-type",
+      "kind": "path_scorer",
+      "found": [
+        "Supplier SUP-001 → Product M001"
+      ],
+      "gold": [
+        [
+          "Supplier:SUP-001",
+          "Material:M001"
+        ]
+      ],
+      "expected": 0
+    },
+    {
+      "id": "path-exact",
+      "kind": "path_scorer",
+      "found": [
+        "Supplier SUP-001 → SUPPLIES → Material M001"
+      ],
+      "gold": [
+        [
+          "Supplier:SUP-001",
+          "Material:M001"
+        ]
+      ],
+      "expected": 1
+    },
+    {
+      "id": "citation-prefix",
+      "kind": "citation_scorer",
+      "found": [
+        {
+          "chunk_id": "doc#11"
+        }
+      ],
+      "gold": [
+        "doc#1"
+      ],
+      "precision": 0,
+      "recall": 0
+    },
+    {
+      "id": "citation-extra",
+      "kind": "citation_scorer",
+      "found": [
+        {
+          "chunk_id": "a"
+        },
+        {
+          "chunk_id": "b"
+        }
+      ],
+      "gold": [
+        "a"
+      ],
+      "precision": 0.5,
+      "recall": 1
+    },
+    {
+      "id": "citation-missing",
+      "kind": "citation_scorer",
+      "found": [
+        {
+          "chunk_id": "a"
+        }
+      ],
+      "gold": [
+        "a",
+        "b"
+      ],
+      "precision": 1,
+      "recall": 0.5
+    },
+    {
+      "id": "no-evidence-is-not-denial",
+      "kind": "denial_scorer",
+      "decision": "no_evidence",
+      "expected": 0
+    },
+    {
+      "id": "actual-denial",
+      "kind": "denial_scorer",
+      "decision": "denied",
+      "expected": 1
+    },
+    {
+      "id": "error-is-not-denial",
+      "kind": "denial_scorer",
+      "decision": "error",
+      "expected": 0
+    }
+  ]
+}

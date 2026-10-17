@@ -15,8 +15,8 @@ async def permission_node(state: AgentState) -> AgentState:
 
     if not user_context:
         decision = PermissionDecision(False, "missing user context")
-    elif user_context.is_external_supplier and not user_context.supplier_id:
-        decision = PermissionDecision(False, "external supplier missing supplier_id")
+    elif not user_context.is_member:
+        decision = PermissionDecision(False, "enterprise membership required")
     else:
         decision = PermissionDecision(True, "query permitted for authenticated user")
 
@@ -25,7 +25,9 @@ async def permission_node(state: AgentState) -> AgentState:
         tenant_id=user_context.tenant_id,
         user_id=user_context.user_id,
         trace_id=trace_id,
-        action="chat_permission_allowed" if decision.allowed else "chat_permission_denied",
+        action=(
+            "chat_permission_allowed" if decision.allowed else "chat_permission_denied"
+        ),
         resource_type="chat",
         resource_id=trace_id,
         permission_decision="allowed" if decision.allowed else "denied",

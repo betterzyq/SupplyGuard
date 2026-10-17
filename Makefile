@@ -2,6 +2,47 @@
 
 COMPOSE = docker compose -f infra/docker-compose.yml
 
+.PHONY: phase1-check phase1-smoke phase1-browser phase2-check phase2-smoke phase2-browser acceptance-up acceptance-down acceptance-status
+.PHONY: phase3-check phase3-smoke phase3-browser phase3-snapshot-check
+phase3-snapshot-check:
+	.venv/bin/python scripts/inspect_simulation.py --latest
+
+phase3-check:
+	.venv/bin/python scripts/phase3_check.py
+
+phase3-smoke:
+	.venv/bin/python scripts/phase3_smoke.py
+
+phase3-browser:
+	.venv/bin/python scripts/phase3_check.py --browser
+
+phase2-check:
+	.venv/bin/python scripts/phase2_check.py
+
+phase2-smoke:
+	.venv/bin/python scripts/phase2_smoke.py
+
+phase2-browser:
+	.venv/bin/python scripts/phase2_check.py --browser
+
+phase1-check:
+	.venv/bin/python scripts/phase1_check.py
+
+phase1-smoke:
+	.venv/bin/python scripts/phase1_smoke.py
+
+phase1-browser:
+	.venv/bin/python scripts/phase1_check.py --browser
+
+acceptance-up:
+	.venv/bin/python scripts/acceptance_services.py up
+
+acceptance-down:
+	.venv/bin/python scripts/acceptance_services.py down
+
+acceptance-status:
+	.venv/bin/python scripts/acceptance_services.py status
+
 # Forward extra goals as script CLI args, e.g.:
 #   make build-real-graph --reset-graph --limit 5000
 # GNU Make treats tokens after "make target" as additional goals; swallow them here.
@@ -45,10 +86,11 @@ migration:
 	uv run alembic revision --autogenerate -m "$(name)"
 
 seed:
-	uv run python scripts/seed_db.py
+	@echo "已禁用破坏性旧种子入口。演示账号请运行 .venv/bin/python scripts/prepare_phase1_demo.py（增量幂等）。"
+	@exit 2
 
 check-authz:
-	uv run python scripts/check_authz.py
+	DEBUG=false .venv/bin/python scripts/check_authz.py
 
 ingest-seed-docs:
 	uv run python scripts/ingest_seed_docs.py
@@ -128,3 +170,45 @@ format:
 
 lint:
 	uv run ruff check apps packages scripts
+
+.PHONY: phase4-data phase4-data-check phase4-train phase4-reproduce phase4-check phase4-smoke phase4-browser phase4-audit
+phase4-data:
+	.venv/bin/python scripts/fetch_phase4_data.py
+phase4-data-check:
+	.venv/bin/python scripts/fetch_phase4_data.py --check-only
+phase4-train:
+	.venv/bin/python scripts/phase4_train.py
+phase4-reproduce:
+	.venv/bin/python scripts/phase4_train.py --reproduce
+phase4-check:
+	.venv/bin/python scripts/phase4_check.py
+phase4-smoke:
+	.venv/bin/python scripts/phase4_smoke.py
+phase4-browser:
+	.venv/bin/python scripts/phase4_check.py --browser
+phase4-audit:
+	.venv/bin/python scripts/phase4_audit.py
+
+.PHONY: phase5-check phase5-db-apply phase5-smoke phase5-browser phase5-audit
+phase5-check:
+	.venv/bin/python scripts/phase5_check.py
+phase5-db-apply:
+	.venv/bin/python scripts/phase5_db.py apply
+phase5-smoke:
+	.venv/bin/python scripts/phase5_smoke.py
+phase5-browser:
+	.venv/bin/python scripts/phase5_check.py --browser
+phase5-audit:
+	.venv/bin/python scripts/phase5_audit.py
+
+.PHONY: phase6-check phase6-smoke phase6-browser phase6-regression phase6-audit
+phase6-check:
+	.venv/bin/python scripts/phase6_check.py
+phase6-smoke:
+	.venv/bin/python scripts/phase6_smoke.py
+phase6-browser:
+	.venv/bin/python scripts/phase6_check.py --browser
+phase6-regression:
+	.venv/bin/python scripts/phase6_check.py --regression
+phase6-audit:
+	.venv/bin/python scripts/phase6_audit.py

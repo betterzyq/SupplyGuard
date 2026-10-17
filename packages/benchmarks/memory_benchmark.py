@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import uuid
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -31,7 +30,9 @@ async def run_memory_benchmark_item(
                     role=str(seed.get("role", "user")),
                     content=str(seed.get("content", "")),
                     timestamp=now_iso(),
-                    entities={k: str(v) for k, v in (seed.get("entities") or {}).items()},
+                    entities={
+                        k: str(v) for k, v in (seed.get("entities") or {}).items()
+                    },
                 ),
             )
 
@@ -43,12 +44,14 @@ async def run_memory_benchmark_item(
             session_id=session_id,
         )
         latency_ms = int((__import__("time").perf_counter() - started) * 1000)
-        answer = memory_evidence[0]["content"] if memory_evidence else "未找到足够证据。"
+        answer = (
+            memory_evidence[0]["content"] if memory_evidence else "未找到足够证据。"
+        )
         memory_metrics = evaluate_memory_row(
             question,
             memory_used=memory_evidence,
             answer=answer,
-            session_hit=bool(question.session_seed),
+            session_hit=False,
         )
         memory_metrics["failure"] = False
         memory_metrics["latency_ms"] = latency_ms
@@ -68,7 +71,12 @@ async def run_memory_benchmark_item(
     except Exception as exc:  # noqa: BLE001
         return {
             "predicted_answer": None,
-            "metrics": {"memory_hit": False, "follow_up_success": False, "wrong_memory_rate": 0.0, "failure": True},
+            "metrics": {
+                "memory_hit": False,
+                "follow_up_success": False,
+                "wrong_memory_rate": 0.0,
+                "failure": True,
+            },
             "latency_ms": 0,
             "token_usage": {},
             "token_usage_total": 0,

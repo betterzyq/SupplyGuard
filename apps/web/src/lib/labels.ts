@@ -1,6 +1,8 @@
 /** Chinese display labels only. API values and diagnostic JSON stay unchanged. */
 const LABELS: Record<string, string> = {
-  admin: "管理员",
+  admin: "管理员（开发人员）",
+  enterprise: "企业用户",
+  not_implemented: "尚未实现",
   procurement_manager: "采购经理",
   procurement_staff: "采购专员",
   logistics_manager: "物流经理",
@@ -116,8 +118,8 @@ const TOOL_LABELS: Record<string, string> = {
   query_delivery_status: "查询交付状态",
   query_delay_events: "查询交付延误事件",
   query_route_info: "查询物流路线",
-  export_risk_report: "导出风险报告",
-  export_benchmark_results: "导出基准评测结果",
+  export_risk_report: "风险报告预览",
+  export_benchmark_results: "评测报告预览",
 };
 
 const TOOL_DESCRIPTIONS: Record<string, string> = {
@@ -128,13 +130,15 @@ const TOOL_DESCRIPTIONS: Record<string, string> = {
   query_delivery_status: "根据订单号或供应商编码查询交付状态。",
   query_delay_events: "查看交付延误事件。",
   query_route_info: "查询起点与终点之间的物流路线信息。",
-  export_risk_report: "导出风险报告，执行前需要审批。",
-  export_benchmark_results: "导出基准评测结果，执行前需要审批。",
+  export_risk_report: "查看风险记录预览；真实报告下载将在 P5 交付。",
+  export_benchmark_results: "管理员查看评测报告预览；真实下载将在 P5 交付。",
 };
 
 export function displayLabel(value: string | null | undefined): string {
   if (!value) return "—";
-  return Object.prototype.hasOwnProperty.call(LABELS, value) ? LABELS[value] : value;
+  return Object.prototype.hasOwnProperty.call(LABELS, value)
+    ? LABELS[value]
+    : value;
 }
 
 export function securityLevelLabel(value: string): string {
@@ -144,7 +148,9 @@ export function securityLevelLabel(value: string): string {
 }
 
 export function toolLabel(name: string): string {
-  return Object.prototype.hasOwnProperty.call(TOOL_LABELS, name) ? TOOL_LABELS[name] : name;
+  return Object.prototype.hasOwnProperty.call(TOOL_LABELS, name)
+    ? TOOL_LABELS[name]
+    : name;
 }
 
 export function toolDescription(name: string, fallback: string): string {
@@ -160,26 +166,43 @@ export function actionLabel(action: string): string {
   const actions: Record<string, string> = {
     "Notify procurement manager": "通知采购经理",
     "Query delivery status via MCP": "通过 MCP 查询交付状态",
-    "Generate risk report (approval required)": "生成风险报告（需审批）",
+    "Generate risk report (approval required)":
+      "风险报告预览（下载在 P5 交付）",
+    "Preview risk report": "风险报告预览（下载在 P5 交付）",
   };
-  return Object.prototype.hasOwnProperty.call(actions, action) ? actions[action] : action;
+  return Object.prototype.hasOwnProperty.call(actions, action)
+    ? actions[action]
+    : action;
 }
 
 export function graphPathLabel(path: string): string {
-  return path.replace(/\b(Supplier|Material|Product|Order|Customer|RiskEvent|DeliveryEvent|QualityIssue)(?=\s)/g, displayLabel);
+  return path.replace(
+    /\b(Supplier|Material|Product|Order|Customer|RiskEvent|DeliveryEvent|QualityIssue)(?=\s)/g,
+    displayLabel,
+  );
 }
 
-export function errorLabel(message: string | undefined, fallback = "请求失败，请稍后重试"): string {
+export function errorLabel(
+  message: string | undefined,
+  fallback = "请求失败，请稍后重试",
+): string {
   if (!message) return fallback;
   const errors: Record<string, string> = {
+    "Account has no active platform role":
+      "此账号未分配有效的平台角色，旧供应商门户已停用",
     "Invalid email or password": "邮箱或密码错误",
     "User is inactive": "账号已停用，请联系管理员",
     "Network Error": "网络连接失败，请确认后端服务已启动",
     "Failed to fetch": "无法连接服务，请检查网络连接",
   };
-  if (Object.prototype.hasOwnProperty.call(errors, message)) return errors[message];
-  if (/^timeout of \d+ms exceeded$/.test(message)) return "请求超时，请稍后重试";
-  return message.replace(/^Request failed with status code (\d+)$/, "请求失败（HTTP $1）");
+  if (Object.prototype.hasOwnProperty.call(errors, message))
+    return errors[message];
+  if (/^timeout of \d+ms exceeded$/.test(message))
+    return "请求超时，请稍后重试";
+  return message.replace(
+    /^Request failed with status code (\d+)$/,
+    "请求失败（HTTP $1）",
+  );
 }
 
 export const GRAPH_ARIA_LABELS = {

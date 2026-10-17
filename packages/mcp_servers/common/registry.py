@@ -15,14 +15,13 @@ from packages.mcp_servers.common.errors import ToolNotFoundError
 from packages.mcp_servers.common.permissions import list_allowed_tools
 from packages.mcp_servers.common.schemas import ToolDefinition, ToolExecutionResult
 from packages.mcp_servers.excel_report_mcp import tools as excel_tools
-from packages.mcp_servers.excel_report_mcp.server import EXCEL_REPORT_TOOLS
 from packages.mcp_servers.logistics_mcp import tools as logistics_tools
-from packages.mcp_servers.logistics_mcp.server import LOGISTICS_TOOLS
 from packages.mcp_servers.supplier_db_mcp import tools as supplier_tools
-from packages.mcp_servers.supplier_db_mcp.server import SUPPLIER_DB_TOOLS
 from packages.observability.repositories.tool_call_log_repo import write_tool_call_log
 
-ToolHandler = Callable[[AsyncSession, UserContext, dict[str, Any]], Awaitable[dict[str, Any]]]
+ToolHandler = Callable[
+    [AsyncSession, UserContext, dict[str, Any]], Awaitable[dict[str, Any]]
+]
 
 TOOL_DEFINITIONS: dict[str, ToolDefinition] = {
     "query_supplier_profile": ToolDefinition(
@@ -69,17 +68,17 @@ TOOL_DEFINITIONS: dict[str, ToolDefinition] = {
     ),
     "export_risk_report": ToolDefinition(
         name="export_risk_report",
-        description="Export risk report (approval required)",
+        description="Generate authenticated tenant risk report download",
         server="excel_report_mcp",
         input_schema={},
-        high_risk=True,
+        high_risk=False,
     ),
     "export_benchmark_results": ToolDefinition(
         name="export_benchmark_results",
-        description="Export benchmark results (approval required)",
+        description="Generate authenticated evaluation report download",
         server="excel_report_mcp",
         input_schema={"benchmark_run_id": "string"},
-        high_risk=True,
+        high_risk=False,
     ),
 }
 
@@ -98,7 +97,9 @@ TOOL_HANDLERS: dict[str, ToolHandler] = {
 
 def get_tool_definitions_for_user(user_context: UserContext) -> list[ToolDefinition]:
     allowed = set(list_allowed_tools(user_context))
-    return [TOOL_DEFINITIONS[name] for name in sorted(allowed) if name in TOOL_DEFINITIONS]
+    return [
+        TOOL_DEFINITIONS[name] for name in sorted(allowed) if name in TOOL_DEFINITIONS
+    ]
 
 
 async def execute_tool_call(
@@ -210,6 +211,8 @@ async def execute_tool_call(
         latency_ms = int((time.perf_counter() - started) * 1000)
         if output.get("status") == "denied" or output.get("error"):
             status = "denied"
+        elif output.get("status") == "not_implemented":
+            status = "not_implemented"
         else:
             status = "success"
         result = ToolExecutionResult(
@@ -270,4 +273,6 @@ async def execute_tool_call(
 
 
 def format_tool_evidence_content(tool_name: str, result: dict[str, Any]) -> str:
-    return json.dumps({"tool": tool_name, "result": result}, ensure_ascii=False, indent=2)
+    return json.dumps(
+        {"tool": tool_name, "result": result}, ensure_ascii=False, indent=2
+    )

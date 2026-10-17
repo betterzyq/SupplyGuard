@@ -60,6 +60,41 @@ def create_app() -> FastAPI:
     app.add_middleware(TraceFinalizeMiddleware)
     app.add_middleware(LoggingContextMiddleware)
     app.add_middleware(RequestIdMiddleware)
+    from packages.operations.service import BusinessError
+    from fastapi.responses import JSONResponse
+    from sqlalchemy.exc import IntegrityError, DBAPIError
+
+    @app.exception_handler(BusinessError)
+    async def business_error(request, exc):
+        return JSONResponse(
+            status_code=exc.status,
+            content={"error": {"code": exc.code, "message": exc.message}},
+        )
+
+    @app.exception_handler(IntegrityError)
+    async def integrity_error(request, exc):
+        return JSONResponse(
+            status_code=409,
+            content={
+                "error": {
+                    "code": "write_conflict",
+                    "message": "Conflicting record; reload before retrying",
+                }
+            },
+        )
+
+    @app.exception_handler(DBAPIError)
+    async def database_error(request, exc):
+        return JSONResponse(
+            status_code=503,
+            content={
+                "error": {
+                    "code": "storage_unavailable",
+                    "message": "Storage busy/unavailable; retry with the same idempotency key",
+                }
+            },
+        )
+
     app.include_router(api_router)
     return app
 

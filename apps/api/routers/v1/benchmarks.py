@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -17,7 +16,12 @@ from apps.api.schemas.benchmark import (
     BenchmarkRunResponse,
 )
 from packages.authz.rbac import UserContext
-from packages.benchmarks.benchmark_repo import create_benchmark_run, get_benchmark_run, list_benchmark_results, list_benchmark_runs
+from packages.benchmarks.benchmark_repo import (
+    create_benchmark_run,
+    get_benchmark_run,
+    list_benchmark_results,
+    list_benchmark_runs,
+)
 from packages.benchmarks.benchmark_runner import BenchmarkConfig, run_benchmark
 from packages.benchmarks.benchmark_tasks import schedule_benchmark_run
 from packages.benchmarks.report_generator import reports_dir
@@ -40,6 +44,11 @@ async def run_benchmark_api(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="unsafe_baseline modes are not exposed via API",
         )
+    if not payload.dry_run:
+        raise HTTPException(
+            409,
+            "Legacy role gold is deprecated; use /prediction/evaluation-contracts for offline scorer/policy contracts. Live retrieval requires reviewed chunk-level gold.",
+        )
     trace_id = await begin_http_trace(
         session,
         user_context=admin_context,
@@ -61,7 +70,9 @@ async def run_benchmark_api(
     )
 
     if payload.dry_run:
-        result = await run_benchmark(session, admin_context=admin_context, config=config)
+        result = await run_benchmark(
+            session, admin_context=admin_context, config=config
+        )
         await session.commit()
         return BenchmarkRunResponse(
             benchmark_run_id=result.get("benchmark_run_id"),
@@ -132,7 +143,9 @@ async def get_run(
 ) -> BenchmarkRunListItem:
     run = await get_benchmark_run(session, run_id)
     if run is None or run.tenant_id != admin_context.tenant_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="benchmark run not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="benchmark run not found"
+        )
     return BenchmarkRunListItem(
         id=run.id,
         name=run.name,
@@ -152,7 +165,9 @@ async def get_run_results(
 ) -> list[BenchmarkResultItem]:
     run = await get_benchmark_run(session, run_id)
     if run is None or run.tenant_id != admin_context.tenant_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="benchmark run not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="benchmark run not found"
+        )
     rows = await list_benchmark_results(session, run_id)
     return [
         BenchmarkResultItem(
@@ -176,12 +191,22 @@ async def get_run_report(
 ) -> BenchmarkReportResponse:
     run = await get_benchmark_run(session, run_id)
     if run is None or run.tenant_id != admin_context.tenant_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="benchmark run not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="benchmark run not found"
+        )
     base = reports_dir() / str(run_id)
     return BenchmarkReportResponse(
         benchmark_run_id=run_id,
-        markdown_path=str(base.with_suffix(".md")) if base.with_suffix(".md").exists() else None,
-        json_path=str(base.with_suffix(".json")) if base.with_suffix(".json").exists() else None,
-        csv_path=str(base.with_suffix(".csv")) if base.with_suffix(".csv").exists() else None,
+        markdown_path=(
+            str(base.with_suffix(".md")) if base.with_suffix(".md").exists() else None
+        ),
+        json_path=(
+            str(base.with_suffix(".json"))
+            if base.with_suffix(".json").exists()
+            else None
+        ),
+        csv_path=(
+            str(base.with_suffix(".csv")) if base.with_suffix(".csv").exists() else None
+        ),
         summary=run.summary,
     )

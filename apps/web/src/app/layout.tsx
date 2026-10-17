@@ -3,11 +3,15 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
-  title: "SupplyGuard — 供应链风险与采购决策平台",
-  description: "融合 Secure RAG、GraphRAG 与 Agent 工作流，支持供应链风险分析与采购决策",
+  title: "SupplyGuard — 制造企业供应链风险与韧性决策平台",
+  description: "面向制造企业，识别交付风险、分析订单影响、辅助供应保障决策",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>

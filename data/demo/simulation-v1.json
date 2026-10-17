@@ -1,0 +1,547 @@
+{
+  "version": "manufacturing-simulation-3.0.0",
+  "preset_id": "manufacturing",
+  "scenario_id": "port-congestion",
+  "as_of": "2026-10-16T09:00:00+08:00",
+  "horizon_days": 14,
+  "materials": [
+    {
+      "id": "MAT-01",
+      "name": "工业控制芯片",
+      "initial_stock": "100",
+      "unit": "件"
+    },
+    {
+      "id": "MAT-02",
+      "name": "精密轴承",
+      "initial_stock": "200",
+      "unit": "件"
+    },
+    {
+      "id": "MAT-03",
+      "name": "工业连接器",
+      "initial_stock": "100",
+      "unit": "件"
+    },
+    {
+      "id": "MAT-04",
+      "name": "高分子封装材料",
+      "initial_stock": "100",
+      "unit": "件"
+    },
+    {
+      "id": "MAT-05",
+      "name": "电控模组",
+      "initial_stock": "200",
+      "unit": "件"
+    },
+    {
+      "id": "MAT-06",
+      "name": "标准紧固件",
+      "initial_stock": "200",
+      "unit": "件"
+    }
+  ],
+  "bom": {
+    "PRD-01": [
+      {
+        "component_id": "MAT-01",
+        "quantity": "1"
+      },
+      {
+        "component_id": "MAT-03",
+        "quantity": "1"
+      },
+      {
+        "component_id": "MAT-04",
+        "quantity": "1"
+      }
+    ],
+    "PRD-02": [
+      {
+        "component_id": "MAT-02",
+        "quantity": "1"
+      },
+      {
+        "component_id": "MAT-05",
+        "quantity": "1"
+      },
+      {
+        "component_id": "MAT-06",
+        "quantity": "2"
+      }
+    ],
+    "PRD-03": [
+      {
+        "component_id": "MAT-01",
+        "quantity": "1"
+      },
+      {
+        "component_id": "MAT-04",
+        "quantity": "1"
+      }
+    ],
+    "PRD-04": [
+      {
+        "component_id": "MAT-03",
+        "quantity": "1"
+      },
+      {
+        "component_id": "MAT-05",
+        "quantity": "1"
+      }
+    ]
+  },
+  "orders": [
+    {
+      "id": "SG-2026-0001",
+      "product_id": "PRD-01",
+      "product_name": "工业控制单元",
+      "quantity": 80,
+      "daily_demand": 20,
+      "daily_capacity": 40,
+      "start_day": 0,
+      "due_day": 3,
+      "amount_cny": "1280000.00"
+    },
+    {
+      "id": "SG-2026-0002",
+      "product_id": "PRD-02",
+      "product_name": "智能伺服组件",
+      "quantity": 100,
+      "daily_demand": 20,
+      "daily_capacity": 40,
+      "start_day": 0,
+      "due_day": 4,
+      "amount_cny": "860000.00"
+    },
+    {
+      "id": "SG-2026-0003",
+      "product_id": "PRD-03",
+      "product_name": "高精度传感模组",
+      "quantity": 100,
+      "daily_demand": 20,
+      "daily_capacity": 40,
+      "start_day": 1,
+      "due_day": 5,
+      "amount_cny": "640000.00"
+    },
+    {
+      "id": "SG-2026-0004",
+      "product_id": "PRD-04",
+      "product_name": "产线通讯模块",
+      "quantity": 100,
+      "daily_demand": 20,
+      "daily_capacity": 40,
+      "start_day": 2,
+      "due_day": 6,
+      "amount_cny": "520000.00"
+    },
+    {
+      "id": "SG-2026-0005",
+      "product_id": "PRD-01",
+      "product_name": "工业控制单元",
+      "quantity": 100,
+      "daily_demand": 20,
+      "daily_capacity": 40,
+      "start_day": 3,
+      "due_day": 7,
+      "amount_cny": "960000.00"
+    },
+    {
+      "id": "SG-2026-0006",
+      "product_id": "PRD-02",
+      "product_name": "智能伺服组件",
+      "quantity": 100,
+      "daily_demand": 20,
+      "daily_capacity": 40,
+      "start_day": 4,
+      "due_day": 8,
+      "amount_cny": "430000.00"
+    },
+    {
+      "id": "SG-2026-0007",
+      "product_id": "PRD-03",
+      "product_name": "高精度传感模组",
+      "quantity": 100,
+      "daily_demand": 20,
+      "daily_capacity": 40,
+      "start_day": 5,
+      "due_day": 9,
+      "amount_cny": "780000.00"
+    },
+    {
+      "id": "SG-2026-0008",
+      "product_id": "PRD-04",
+      "product_name": "产线通讯模块",
+      "quantity": 100,
+      "daily_demand": 20,
+      "daily_capacity": 40,
+      "start_day": 6,
+      "due_day": 10,
+      "amount_cny": "1100000.00"
+    },
+    {
+      "id": "SG-2026-0009",
+      "product_id": "PRD-01",
+      "product_name": "工业控制单元",
+      "quantity": 100,
+      "daily_demand": 20,
+      "daily_capacity": 40,
+      "start_day": 7,
+      "due_day": 11,
+      "amount_cny": "360000.00"
+    },
+    {
+      "id": "SG-2026-0010",
+      "product_id": "PRD-02",
+      "product_name": "智能伺服组件",
+      "quantity": 60,
+      "daily_demand": 20,
+      "daily_capacity": 40,
+      "start_day": 0,
+      "due_day": 2,
+      "amount_cny": "280000.00"
+    }
+  ],
+  "supplies": [
+    {
+      "id": "LANE-MAT-01",
+      "material_id": "MAT-01",
+      "source_site_id": "SITE-KS",
+      "via_site_ids": [
+        "SITE-NB",
+        "SITE-HH"
+      ],
+      "receipt_per_day": "60",
+      "capacity_per_day": "90"
+    },
+    {
+      "id": "LANE-MAT-02",
+      "material_id": "MAT-02",
+      "source_site_id": "SITE-HZ",
+      "via_site_ids": [],
+      "receipt_per_day": "60",
+      "capacity_per_day": "90"
+    },
+    {
+      "id": "LANE-MAT-03",
+      "material_id": "MAT-03",
+      "source_site_id": "SITE-DG",
+      "via_site_ids": [],
+      "receipt_per_day": "60",
+      "capacity_per_day": "90"
+    },
+    {
+      "id": "LANE-MAT-04",
+      "material_id": "MAT-04",
+      "source_site_id": "SITE-WH",
+      "via_site_ids": [
+        "SITE-CQ"
+      ],
+      "receipt_per_day": "60",
+      "capacity_per_day": "90"
+    },
+    {
+      "id": "LANE-MAT-05",
+      "material_id": "MAT-05",
+      "source_site_id": "SITE-HN",
+      "via_site_ids": [
+        "SITE-NB"
+      ],
+      "receipt_per_day": "60",
+      "capacity_per_day": "90"
+    },
+    {
+      "id": "LANE-MAT-06",
+      "material_id": "MAT-06",
+      "source_site_id": "SITE-HZ",
+      "via_site_ids": [],
+      "receipt_per_day": "120",
+      "capacity_per_day": "180"
+    }
+  ],
+  "inbounds": [
+    {
+      "id": "LOT-MAT-01",
+      "material_id": "MAT-01",
+      "quantity": "80",
+      "arrival_day": 7,
+      "via_site_ids": [
+        "SITE-NB"
+      ]
+    },
+    {
+      "id": "LOT-MAT-03",
+      "material_id": "MAT-03",
+      "quantity": "80",
+      "arrival_day": 7,
+      "via_site_ids": []
+    },
+    {
+      "id": "LOT-MAT-04",
+      "material_id": "MAT-04",
+      "quantity": "80",
+      "arrival_day": 7,
+      "via_site_ids": [
+        "SITE-CQ"
+      ]
+    }
+  ],
+  "events": [],
+  "options": [
+    {
+      "id": "alternative-MAT-01",
+      "name": "替代采购 · MAT-01",
+      "kind": "alternative",
+      "material_id": "MAT-01",
+      "source_site_id": "SITE-SH",
+      "via_site_ids": [],
+      "certified": true,
+      "limit_quantity": "60",
+      "lead_days": 1,
+      "unit_cost_cny": "25",
+      "fixed_cost_cny": "1000",
+      "lot_id": null,
+      "resource_id": "alternative-MAT-01",
+      "description": "增量日供给，逐日受来源/途经站点限制"
+    },
+    {
+      "id": "transfer-MAT-01",
+      "name": "备援库存调拨 · MAT-01",
+      "kind": "transfer",
+      "material_id": "MAT-01",
+      "source_site_id": "SITE-CQ",
+      "via_site_ids": [],
+      "certified": true,
+      "limit_quantity": "100",
+      "lead_days": 1,
+      "unit_cost_cny": "8",
+      "fixed_cost_cny": "500",
+      "lot_id": null,
+      "resource_id": "transfer-MAT-01",
+      "description": "一次性有限备援库存"
+    },
+    {
+      "id": "expedite-MAT-01",
+      "name": "在途加急 · MAT-01",
+      "kind": "expedite",
+      "material_id": "MAT-01",
+      "source_site_id": "SITE-NB",
+      "via_site_ids": [
+        "SITE-NB"
+      ],
+      "certified": true,
+      "limit_quantity": "80",
+      "lead_days": 1,
+      "unit_cost_cny": "15",
+      "fixed_cost_cny": "800",
+      "lot_id": "LOT-MAT-01",
+      "resource_id": "expedite-MAT-01",
+      "description": "重排已有批次，仍受原路径事件限制"
+    },
+    {
+      "id": "reroute-MAT-01",
+      "name": "在途改道 · MAT-01",
+      "kind": "reroute",
+      "material_id": "MAT-01",
+      "source_site_id": "SITE-SH",
+      "via_site_ids": [],
+      "certified": true,
+      "limit_quantity": "80",
+      "lead_days": 2,
+      "unit_cost_cny": "20",
+      "fixed_cost_cny": "1200",
+      "lot_id": "LOT-MAT-01",
+      "resource_id": "reroute-MAT-01",
+      "description": "重排已有批次并使用备援路径；原到货同时取消"
+    },
+    {
+      "id": "alternative-MAT-01-uncertified",
+      "name": "替代采购 · MAT-01（未认证）",
+      "kind": "alternative",
+      "material_id": "MAT-01",
+      "source_site_id": "SITE-SH",
+      "via_site_ids": [],
+      "certified": false,
+      "limit_quantity": "100",
+      "lead_days": 1,
+      "unit_cost_cny": "10",
+      "fixed_cost_cny": "200",
+      "lot_id": null,
+      "resource_id": "alternative-MAT-01-uncertified",
+      "description": "增量日供给，逐日受来源/途经站点限制"
+    },
+    {
+      "id": "alternative-MAT-03",
+      "name": "替代采购 · MAT-03",
+      "kind": "alternative",
+      "material_id": "MAT-03",
+      "source_site_id": "SITE-SH",
+      "via_site_ids": [],
+      "certified": true,
+      "limit_quantity": "60",
+      "lead_days": 1,
+      "unit_cost_cny": "25",
+      "fixed_cost_cny": "1000",
+      "lot_id": null,
+      "resource_id": "alternative-MAT-03",
+      "description": "增量日供给，逐日受来源/途经站点限制"
+    },
+    {
+      "id": "transfer-MAT-03",
+      "name": "备援库存调拨 · MAT-03",
+      "kind": "transfer",
+      "material_id": "MAT-03",
+      "source_site_id": "SITE-CQ",
+      "via_site_ids": [],
+      "certified": true,
+      "limit_quantity": "100",
+      "lead_days": 1,
+      "unit_cost_cny": "8",
+      "fixed_cost_cny": "500",
+      "lot_id": null,
+      "resource_id": "transfer-MAT-03",
+      "description": "一次性有限备援库存"
+    },
+    {
+      "id": "expedite-MAT-03",
+      "name": "在途加急 · MAT-03",
+      "kind": "expedite",
+      "material_id": "MAT-03",
+      "source_site_id": "SITE-SH",
+      "via_site_ids": [],
+      "certified": true,
+      "limit_quantity": "80",
+      "lead_days": 1,
+      "unit_cost_cny": "15",
+      "fixed_cost_cny": "800",
+      "lot_id": "LOT-MAT-03",
+      "resource_id": "expedite-MAT-03",
+      "description": "重排已有批次，仍受原路径事件限制"
+    },
+    {
+      "id": "reroute-MAT-03",
+      "name": "在途改道 · MAT-03",
+      "kind": "reroute",
+      "material_id": "MAT-03",
+      "source_site_id": "SITE-SH",
+      "via_site_ids": [],
+      "certified": true,
+      "limit_quantity": "80",
+      "lead_days": 2,
+      "unit_cost_cny": "20",
+      "fixed_cost_cny": "1200",
+      "lot_id": "LOT-MAT-03",
+      "resource_id": "reroute-MAT-03",
+      "description": "重排已有批次并使用备援路径；原到货同时取消"
+    },
+    {
+      "id": "alternative-MAT-03-uncertified",
+      "name": "替代采购 · MAT-03（未认证）",
+      "kind": "alternative",
+      "material_id": "MAT-03",
+      "source_site_id": "SITE-SH",
+      "via_site_ids": [],
+      "certified": false,
+      "limit_quantity": "100",
+      "lead_days": 1,
+      "unit_cost_cny": "10",
+      "fixed_cost_cny": "200",
+      "lot_id": null,
+      "resource_id": "alternative-MAT-03-uncertified",
+      "description": "增量日供给，逐日受来源/途经站点限制"
+    },
+    {
+      "id": "alternative-MAT-04",
+      "name": "替代采购 · MAT-04",
+      "kind": "alternative",
+      "material_id": "MAT-04",
+      "source_site_id": "SITE-SH",
+      "via_site_ids": [],
+      "certified": true,
+      "limit_quantity": "60",
+      "lead_days": 1,
+      "unit_cost_cny": "25",
+      "fixed_cost_cny": "1000",
+      "lot_id": null,
+      "resource_id": "alternative-MAT-04",
+      "description": "增量日供给，逐日受来源/途经站点限制"
+    },
+    {
+      "id": "transfer-MAT-04",
+      "name": "备援库存调拨 · MAT-04",
+      "kind": "transfer",
+      "material_id": "MAT-04",
+      "source_site_id": "SITE-SH",
+      "via_site_ids": [],
+      "certified": true,
+      "limit_quantity": "100",
+      "lead_days": 1,
+      "unit_cost_cny": "8",
+      "fixed_cost_cny": "500",
+      "lot_id": null,
+      "resource_id": "transfer-MAT-04",
+      "description": "一次性有限备援库存"
+    },
+    {
+      "id": "expedite-MAT-04",
+      "name": "在途加急 · MAT-04",
+      "kind": "expedite",
+      "material_id": "MAT-04",
+      "source_site_id": "SITE-SH",
+      "via_site_ids": [
+        "SITE-CQ"
+      ],
+      "certified": true,
+      "limit_quantity": "80",
+      "lead_days": 1,
+      "unit_cost_cny": "15",
+      "fixed_cost_cny": "800",
+      "lot_id": "LOT-MAT-04",
+      "resource_id": "expedite-MAT-04",
+      "description": "重排已有批次，仍受原路径事件限制"
+    },
+    {
+      "id": "reroute-MAT-04",
+      "name": "在途改道 · MAT-04",
+      "kind": "reroute",
+      "material_id": "MAT-04",
+      "source_site_id": "SITE-SH",
+      "via_site_ids": [],
+      "certified": true,
+      "limit_quantity": "80",
+      "lead_days": 2,
+      "unit_cost_cny": "20",
+      "fixed_cost_cny": "1200",
+      "lot_id": "LOT-MAT-04",
+      "resource_id": "reroute-MAT-04",
+      "description": "重排已有批次并使用备援路径；原到货同时取消"
+    },
+    {
+      "id": "alternative-MAT-04-uncertified",
+      "name": "替代采购 · MAT-04（未认证）",
+      "kind": "alternative",
+      "material_id": "MAT-04",
+      "source_site_id": "SITE-SH",
+      "via_site_ids": [],
+      "certified": false,
+      "limit_quantity": "100",
+      "lead_days": 1,
+      "unit_cost_cny": "10",
+      "fixed_cost_cny": "200",
+      "lot_id": null,
+      "resource_id": "alternative-MAT-04-uncertified",
+      "description": "增量日供给，逐日受来源/途经站点限制"
+    }
+  ],
+  "assumptions": [
+    "合成制造计划；按日离散、同企业共享可用库存池，忽略跨厂运输与小时内顺序；不用于直接执行采购。",
+    "日初收货，随后按承诺日及订单 ID 排产；新需求按日释放，积压可在日产能内补产；生产完成即视为交付可用，不再重复计算成品配送。",
+    "常规供给为已规划的日到货；事件产能比例取来源/途经站点约束的最小值，同区域或重叠事件不相乘；恢复期线性爬坡。",
+    "在途批次单独列示，不属于常规日到货；路线未完全恢复则整批等待。加急/改道重排已有批次，不凭空增加库存。",
+    "所有金额为人民币；措施成本为增量溢价/运输费与固定费用，不含基础采购款、税费和延误罚款；支付按实际安排且窗口内执行的数量计算，即使未改善结果也计费。",
+    "确定性点估计，无随机置信区间；库存/需求/成本假设和排产优先级敏感，不是预测精度或实际收益。",
+    "仿真覆盖完整的合成排产订单，不以地图当前筛选后的订单代替全量需求；保留订单之间的库存竞争。"
+  ]
+}

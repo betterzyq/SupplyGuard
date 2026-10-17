@@ -1,0 +1,551 @@
+{
+  "schema_version": "1.0",
+  "dataset_version": "manufacturing-demo-1.0.0",
+  "source_type": "synthetic",
+  "as_of": "2026-10-16T09:00:00+08:00",
+  "company_name": "华衡智造 · 演示企业",
+  "sites": [
+    {
+      "id": "SITE-SZ",
+      "name": "深圳制造中心",
+      "kind": "factory",
+      "longitude": 114.06,
+      "latitude": 22.55,
+      "country": "CN"
+    },
+    {
+      "id": "SITE-SH",
+      "name": "上海分拨仓",
+      "kind": "warehouse",
+      "longitude": 121.47,
+      "latitude": 31.23,
+      "country": "CN"
+    },
+    {
+      "id": "SITE-NB",
+      "name": "宁波港",
+      "kind": "port",
+      "longitude": 121.85,
+      "latitude": 29.87,
+      "country": "CN"
+    },
+    {
+      "id": "SITE-KS",
+      "name": "昆山电子工厂",
+      "kind": "supplier",
+      "longitude": 120.98,
+      "latitude": 31.38,
+      "country": "CN"
+    },
+    {
+      "id": "SITE-HZ",
+      "name": "杭州精密部件厂",
+      "kind": "supplier",
+      "longitude": 120.16,
+      "latitude": 30.25,
+      "country": "CN"
+    },
+    {
+      "id": "SITE-DG",
+      "name": "东莞连接器工厂",
+      "kind": "supplier",
+      "longitude": 113.75,
+      "latitude": 23.02,
+      "country": "CN"
+    },
+    {
+      "id": "SITE-WH",
+      "name": "武汉材料工厂",
+      "kind": "supplier",
+      "longitude": 114.3,
+      "latitude": 30.59,
+      "country": "CN"
+    },
+    {
+      "id": "SITE-HN",
+      "name": "河内供应站点",
+      "kind": "supplier",
+      "longitude": 105.85,
+      "latitude": 21.03,
+      "country": "VN"
+    },
+    {
+      "id": "SITE-HH",
+      "name": "汉堡港",
+      "kind": "port",
+      "longitude": 9.97,
+      "latitude": 53.54,
+      "country": "DE"
+    },
+    {
+      "id": "SITE-CQ",
+      "name": "重庆备援仓",
+      "kind": "warehouse",
+      "longitude": 106.55,
+      "latitude": 29.56,
+      "country": "CN"
+    }
+  ],
+  "suppliers": [
+    {
+      "id": "V-001",
+      "name": "昆山智芯电子",
+      "tier": 1,
+      "site_id": "SITE-KS"
+    },
+    {
+      "id": "V-002",
+      "name": "杭州精工制造",
+      "tier": 1,
+      "site_id": "SITE-HZ"
+    },
+    {
+      "id": "V-003",
+      "name": "东莞联达连接器",
+      "tier": 2,
+      "site_id": "SITE-DG"
+    },
+    {
+      "id": "V-004",
+      "name": "武汉新材科技",
+      "tier": 2,
+      "site_id": "SITE-WH"
+    },
+    {
+      "id": "V-005",
+      "name": "河内电控组件",
+      "tier": 1,
+      "site_id": "SITE-HN"
+    },
+    {
+      "id": "V-006",
+      "name": "华东备援供应",
+      "tier": 1,
+      "site_id": "SITE-SH"
+    }
+  ],
+  "materials": [
+    {
+      "id": "MAT-01",
+      "name": "工业控制芯片",
+      "critical": true,
+      "supplier_ids": [
+        "V-001",
+        "V-006"
+      ]
+    },
+    {
+      "id": "MAT-02",
+      "name": "精密轴承",
+      "critical": true,
+      "supplier_ids": [
+        "V-002"
+      ]
+    },
+    {
+      "id": "MAT-03",
+      "name": "工业连接器",
+      "critical": true,
+      "supplier_ids": [
+        "V-003"
+      ]
+    },
+    {
+      "id": "MAT-04",
+      "name": "高分子封装材料",
+      "critical": true,
+      "supplier_ids": [
+        "V-004"
+      ]
+    },
+    {
+      "id": "MAT-05",
+      "name": "电控模组",
+      "critical": true,
+      "supplier_ids": [
+        "V-005",
+        "V-006"
+      ]
+    },
+    {
+      "id": "MAT-06",
+      "name": "标准紧固件",
+      "critical": false,
+      "supplier_ids": [
+        "V-002",
+        "V-006"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "PRD-01",
+      "name": "工业控制单元",
+      "material_ids": [
+        "MAT-01",
+        "MAT-03",
+        "MAT-04"
+      ]
+    },
+    {
+      "id": "PRD-02",
+      "name": "智能伺服组件",
+      "material_ids": [
+        "MAT-02",
+        "MAT-05",
+        "MAT-06"
+      ]
+    },
+    {
+      "id": "PRD-03",
+      "name": "高精度传感模组",
+      "material_ids": [
+        "MAT-01",
+        "MAT-04"
+      ]
+    },
+    {
+      "id": "PRD-04",
+      "name": "产线通讯模块",
+      "material_ids": [
+        "MAT-03",
+        "MAT-05"
+      ]
+    }
+  ],
+  "orders": [
+    {
+      "id": "SG-2026-0001",
+      "name": "制造交付订单 01",
+      "product_id": "PRD-01",
+      "supplier_id": "V-001",
+      "destination_site_id": "SITE-SZ",
+      "customer": "华南装备集团",
+      "amount_cny": "1280000.00",
+      "promised_at": "2026-10-19T18:00:00+08:00",
+      "status": "in_transit",
+      "action_status": "open"
+    },
+    {
+      "id": "SG-2026-0002",
+      "name": "制造交付订单 02",
+      "product_id": "PRD-02",
+      "supplier_id": "V-002",
+      "destination_site_id": "SITE-SH",
+      "customer": "华东自动化",
+      "amount_cny": "860000.00",
+      "promised_at": "2026-10-20T18:00:00+08:00",
+      "status": "pending",
+      "action_status": "in_progress"
+    },
+    {
+      "id": "SG-2026-0003",
+      "name": "制造交付订单 03",
+      "product_id": "PRD-03",
+      "supplier_id": "V-004",
+      "destination_site_id": "SITE-SZ",
+      "customer": "海外工业客户",
+      "amount_cny": "640000.00",
+      "promised_at": "2026-10-21T18:00:00+08:00",
+      "status": "in_transit",
+      "action_status": "open"
+    },
+    {
+      "id": "SG-2026-0004",
+      "name": "制造交付订单 04",
+      "product_id": "PRD-04",
+      "supplier_id": "V-003",
+      "destination_site_id": "SITE-SH",
+      "customer": "华南装备集团",
+      "amount_cny": "520000.00",
+      "promised_at": "2026-10-22T18:00:00+08:00",
+      "status": "pending",
+      "action_status": "open"
+    },
+    {
+      "id": "SG-2026-0005",
+      "name": "制造交付订单 05",
+      "product_id": "PRD-01",
+      "supplier_id": "V-001",
+      "destination_site_id": "SITE-SZ",
+      "customer": "华东自动化",
+      "amount_cny": "960000.00",
+      "promised_at": "2026-10-23T18:00:00+08:00",
+      "status": "in_transit",
+      "action_status": "resolved"
+    },
+    {
+      "id": "SG-2026-0006",
+      "name": "制造交付订单 06",
+      "product_id": "PRD-02",
+      "supplier_id": "V-002",
+      "destination_site_id": "SITE-SH",
+      "customer": "海外工业客户",
+      "amount_cny": "430000.00",
+      "promised_at": "2026-10-24T18:00:00+08:00",
+      "status": "pending",
+      "action_status": "open"
+    },
+    {
+      "id": "SG-2026-0007",
+      "name": "制造交付订单 07",
+      "product_id": "PRD-03",
+      "supplier_id": "V-004",
+      "destination_site_id": "SITE-SZ",
+      "customer": "华南装备集团",
+      "amount_cny": "780000.00",
+      "promised_at": "2026-10-25T18:00:00+08:00",
+      "status": "in_transit",
+      "action_status": "in_progress"
+    },
+    {
+      "id": "SG-2026-0008",
+      "name": "制造交付订单 08",
+      "product_id": "PRD-04",
+      "supplier_id": "V-003",
+      "destination_site_id": "SITE-SH",
+      "customer": "华东自动化",
+      "amount_cny": "1100000.00",
+      "promised_at": "2026-10-26T18:00:00+08:00",
+      "status": "pending",
+      "action_status": "open"
+    },
+    {
+      "id": "SG-2026-0009",
+      "name": "制造交付订单 09",
+      "product_id": "PRD-01",
+      "supplier_id": "V-001",
+      "destination_site_id": "SITE-SZ",
+      "customer": "海外工业客户",
+      "amount_cny": "360000.00",
+      "promised_at": "2026-10-27T18:00:00+08:00",
+      "status": "in_transit",
+      "action_status": "open"
+    },
+    {
+      "id": "SG-2026-0010",
+      "name": "制造交付订单 10",
+      "product_id": "PRD-02",
+      "supplier_id": "V-002",
+      "destination_site_id": "SITE-SH",
+      "customer": "华南装备集团",
+      "amount_cny": "280000.00",
+      "promised_at": "2026-10-18T18:00:00+08:00",
+      "status": "pending",
+      "action_status": "open"
+    },
+    {
+      "id": "SG-2026-0011",
+      "name": "制造交付订单 11",
+      "product_id": "PRD-03",
+      "supplier_id": "V-004",
+      "destination_site_id": "SITE-SZ",
+      "customer": "华东自动化",
+      "amount_cny": "190000.00",
+      "promised_at": "2026-10-19T18:00:00+08:00",
+      "status": "delivered",
+      "action_status": "resolved"
+    },
+    {
+      "id": "SG-2026-0012",
+      "name": "制造交付订单 12",
+      "product_id": "PRD-04",
+      "supplier_id": "V-003",
+      "destination_site_id": "SITE-SH",
+      "customer": "海外工业客户",
+      "amount_cny": "250000.00",
+      "promised_at": "2026-10-20T18:00:00+08:00",
+      "status": "cancelled",
+      "action_status": "resolved"
+    }
+  ],
+  "shipments": [
+    {
+      "id": "SHP-001",
+      "name": "演示运输批次 01",
+      "order_ids": [
+        "SG-2026-0001"
+      ],
+      "origin_site_id": "SITE-NB",
+      "destination_site_id": "SITE-SZ",
+      "mode": "ocean",
+      "eta": "2026-10-19T18:00:00+08:00"
+    },
+    {
+      "id": "SHP-002",
+      "name": "演示运输批次 02",
+      "order_ids": [
+        "SG-2026-0002"
+      ],
+      "origin_site_id": "SITE-HN",
+      "destination_site_id": "SITE-SH",
+      "mode": "road",
+      "eta": "2026-10-20T18:00:00+08:00"
+    },
+    {
+      "id": "SHP-003",
+      "name": "演示运输批次 03",
+      "order_ids": [
+        "SG-2026-0003"
+      ],
+      "origin_site_id": "SITE-NB",
+      "destination_site_id": "SITE-SZ",
+      "mode": "ocean",
+      "eta": "2026-10-21T18:00:00+08:00"
+    },
+    {
+      "id": "SHP-004",
+      "name": "演示运输批次 04",
+      "order_ids": [
+        "SG-2026-0004"
+      ],
+      "origin_site_id": "SITE-HN",
+      "destination_site_id": "SITE-SH",
+      "mode": "road",
+      "eta": "2026-10-22T18:00:00+08:00"
+    },
+    {
+      "id": "SHP-005",
+      "name": "演示运输批次 05",
+      "order_ids": [
+        "SG-2026-0005"
+      ],
+      "origin_site_id": "SITE-NB",
+      "destination_site_id": "SITE-SZ",
+      "mode": "ocean",
+      "eta": "2026-10-23T18:00:00+08:00"
+    },
+    {
+      "id": "SHP-006",
+      "name": "演示运输批次 06",
+      "order_ids": [
+        "SG-2026-0006"
+      ],
+      "origin_site_id": "SITE-HN",
+      "destination_site_id": "SITE-SH",
+      "mode": "road",
+      "eta": "2026-10-24T18:00:00+08:00"
+    },
+    {
+      "id": "SHP-007",
+      "name": "演示运输批次 07",
+      "order_ids": [
+        "SG-2026-0007"
+      ],
+      "origin_site_id": "SITE-NB",
+      "destination_site_id": "SITE-SZ",
+      "mode": "ocean",
+      "eta": "2026-10-25T18:00:00+08:00"
+    },
+    {
+      "id": "SHP-008",
+      "name": "演示运输批次 08",
+      "order_ids": [
+        "SG-2026-0008"
+      ],
+      "origin_site_id": "SITE-HN",
+      "destination_site_id": "SITE-SH",
+      "mode": "road",
+      "eta": "2026-10-26T18:00:00+08:00"
+    }
+  ],
+  "risk_events": [
+    {
+      "id": "EVT-PORT",
+      "name": "宁波港集装箱作业拥堵",
+      "kind": "port_congestion",
+      "severity": "high",
+      "site_ids": [
+        "SITE-NB"
+      ],
+      "affected_order_ids": [
+        "SG-2026-0001",
+        "SG-2026-0002",
+        "SG-2026-0005",
+        "SG-2026-0011"
+      ],
+      "description": "模拟港口积压，关联关键物料在途批次；延误影响待库存模拟进一步判断。",
+      "detected_at": "2026-10-16T06:00:00+08:00"
+    },
+    {
+      "id": "EVT-PORT-SECONDARY",
+      "name": "转运衔接窗口收紧",
+      "kind": "port_congestion",
+      "severity": "medium",
+      "site_ids": [
+        "SITE-HH"
+      ],
+      "affected_order_ids": [
+        "SG-2026-0001",
+        "SG-2026-0010"
+      ],
+      "description": "同一订单可能关联多项风险，敞口按唯一订单计数。",
+      "detected_at": "2026-10-16T07:30:00+08:00"
+    },
+    {
+      "id": "EVT-TIER2",
+      "name": "二级连接器供应站点停产",
+      "kind": "supplier_shutdown",
+      "severity": "critical",
+      "site_ids": [
+        "SITE-DG"
+      ],
+      "affected_order_ids": [
+        "SG-2026-0001",
+        "SG-2026-0004",
+        "SG-2026-0005",
+        "SG-2026-0008"
+      ],
+      "description": "模拟二级供应商设备停产，展示间接依赖与替代供给决策需求。",
+      "detected_at": "2026-10-16T05:20:00+08:00"
+    },
+    {
+      "id": "EVT-FLOOD",
+      "name": "区域强降雨影响材料运输",
+      "kind": "regional_flood",
+      "severity": "critical",
+      "site_ids": [
+        "SITE-WH",
+        "SITE-CQ"
+      ],
+      "affected_order_ids": [
+        "SG-2026-0003",
+        "SG-2026-0007",
+        "SG-2026-0009",
+        "SG-2026-0011"
+      ],
+      "description": "模拟多个站点同时暴露于区域事件；不是实时气象预警。",
+      "detected_at": "2026-10-16T04:40:00+08:00"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "port-congestion",
+      "name": "港口拥堵",
+      "description": "关键物料运输受阻，先识别交付风险，再评估加急与改道。",
+      "risk_event_ids": [
+        "EVT-PORT",
+        "EVT-PORT-SECONDARY"
+      ],
+      "decision_question": "哪些交付承诺需要优先保护？"
+    },
+    {
+      "id": "tier2-shutdown",
+      "name": "二级供应商停产",
+      "description": "直接供应商之外的依赖中断，暴露产品与订单的共同瓶颈。",
+      "risk_event_ids": [
+        "EVT-TIER2"
+      ],
+      "decision_question": "应优先验证哪一家替代供应商？"
+    },
+    {
+      "id": "regional-flood",
+      "name": "区域灾害",
+      "description": "同区域站点同时受扰，观察集中度与备援布局。",
+      "risk_event_ids": [
+        "EVT-FLOOD"
+      ],
+      "decision_question": "如何安排跨区域调拨与运输备援？"
+    }
+  ]
+}

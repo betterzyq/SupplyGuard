@@ -1,173 +1,212 @@
-"""Deterministic benchmark metrics (no LLM judge)."""
+"""Strict scorer-v2. None means not evaluable; absence is never a perfect score."""
 
 from __future__ import annotations
-
 import math
+import re
 from statistics import mean
 from typing import Any, Sequence
 
+SCORER_VERSION = "enterprise-scorer-v2"
 
-def recall_at_k(retrieved: Sequence[str], gold: Sequence[str], k: int) -> float:
+
+def unique(items):
+    return list(dict.fromkeys(items))
+
+
+def recall_at_k(retrieved: Sequence[str], gold: Sequence[str], k: int):
+    return (
+        len(set(retrieved[: max(0, k)]) & set(gold)) / len(set(gold)) if gold else None
+    )
+
+
+def precision_at_k(retrieved: Sequence[str], gold: Sequence[str], k: int):
     if not gold:
-        return 1.0 if not retrieved[:k] else 0.0
-    gold_set = set(gold)
-    hits = len(gold_set & set(retrieved[:k]))
-    return hits / len(gold_set)
+        return None
+    # k result slots, duplicates occupy slots without repeated credit; no padding denominator.
+    top = list(retrieved[: max(0, k)])
+    return len(set(top) & set(gold)) / len(top) if top else 0.0
 
 
-def precision_at_k(retrieved: Sequence[str], gold: Sequence[str], k: int) -> float:
-    if k <= 0:
-        return 0.0
-    top = retrieved[:k]
-    if not top:
-        return 0.0
-    gold_set = set(gold)
-    hits = sum(1 for item in top if item in gold_set)
-    return hits / len(top)
-
-
-def mrr(retrieved: Sequence[str], gold: Sequence[str]) -> float:
-    gold_set = set(gold)
-    for index, item in enumerate(retrieved, start=1):
-        if item in gold_set:
-            return 1.0 / index
-    return 0.0
-
-
-def ndcg_at_k(retrieved: Sequence[str], gold: Sequence[str], k: int) -> float:
+def mrr(retrieved: Sequence[str], gold: Sequence[str]):
     if not gold:
-        return 1.0
-    gold_set = set(gold)
+        return None
+    return next((1 / i for i, x in enumerate(retrieved, 1) if x in set(gold)), 0.0)
+
+
+def ndcg_at_k(retrieved: Sequence[str], gold: Sequence[str], k: int):
+    if not gold:
+        return None
+    seen = set()
     dcg = 0.0
-    for index, item in enumerate(retrieved[:k], start=1):
-        if item in gold_set:
-            dcg += 1.0 / math.log2(index + 1)
-    ideal_hits = min(len(gold_set), k)
-    idcg = sum(1.0 / math.log2(i + 1) for i in range(1, ideal_hits + 1))
-    return dcg / idcg if idcg > 0 else 0.0
+    for i, x in enumerate(retrieved[: max(0, k)], 1):
+        if x in set(gold) and x not in seen:
+            dcg += 1 / math.log2(i + 1)
+        seen.add(x)
+    ideal = sum(
+        1 / math.log2(i + 1) for i in range(1, min(len(set(gold)), max(0, k)) + 1)
+    )
+    return dcg / ideal if ideal else 0.0
 
 
-def citation_accuracy(citations: Sequence[dict[str, Any]], gold_chunk_ids: Sequence[str]) -> float:
+def citation_scores(citations: Sequence[dict[str, Any]], gold_chunk_ids: Sequence[str]):
     if not gold_chunk_ids:
-        return 1.0 if not citations else 0.0
-    if not citations:
-        return 0.0
-    cited_ids = {str(c.get("chunk_id") or c.get("id") or "") for c in citations}
-    cited_ids |= {str(c.get("document_id", "")) + "#" + str(c.get("chunk_index", "")) for c in citations}
-    gold_set = set(str(g) for g in gold_chunk_ids)
-    hits = sum(1 for g in gold_set if any(g in cid or cid.endswith(g) for cid in cited_ids if cid))
-    return hits / len(gold_set) if gold_set else 1.0
-
-
-def graph_path_hit_rate(found_paths: Sequence[str], gold_paths: Sequence[Sequence[str]]) -> float:
-    if not gold_paths:
-        return 1.0 if not found_paths else 0.0
-    if not found_paths:
-        return 0.0
-    hits = 0
-    for gold in gold_paths:
-        normalized = [node.replace("Supplier:", "Supplier ").replace(":", " ") for node in gold]
-        joined = " → ".join(gold)
-        if any(all(token.split(":")[-1] in path for token in gold if ":" in token) for path in found_paths):
-            hits += 1
-        elif any(piece in path for path in found_paths for piece in normalized):
-            hits += 1
-        elif any(joined in path or path in joined for path in found_paths):
-            hits += 1
-    return hits / len(gold_paths)
-
-
-def entity_recall(found_entities: Sequence[str], gold_entities: Sequence[str]) -> float:
-    if not gold_entities:
-        return 1.0
-    gold_set = {e.upper() for e in gold_entities}
-    found_set = {e.upper() for e in found_entities}
-    return len(gold_set & found_set) / len(gold_set)
-
-
-def permission_violation_rate(results: list[dict[str, Any]]) -> float:
-    perm = [r for r in results if r.get("requires_permission") or r.get("should_be_blocked")]
-    if not perm:
-        return 0.0
-    violations = sum(1 for r in perm if r.get("permission_violation"))
-    return violations / len(perm)
-
-
-def blocked_accuracy(results: list[dict[str, Any]]) -> float:
-    blocked = [r for r in results if r.get("should_be_blocked")]
-    if not blocked:
-        return 1.0
-    correct = sum(1 for r in blocked if r.get("was_blocked_or_no_evidence"))
-    return correct / len(blocked)
-
-
-def allowed_accuracy(results: list[dict[str, Any]]) -> float:
-    allowed = [r for r in results if not r.get("should_be_blocked") and r.get("requires_permission")]
-    if not allowed:
-        return 1.0
-    correct = sum(1 for r in allowed if not r.get("was_blocked_or_no_evidence") and r.get("has_evidence"))
-    return correct / len(allowed)
-
-
-def false_block_rate(results: list[dict[str, Any]]) -> float:
-    allowed = [r for r in results if not r.get("should_be_blocked")]
-    if not allowed:
-        return 0.0
-    false_blocks = sum(1 for r in allowed if r.get("was_blocked_or_no_evidence") and r.get("expected_evidence"))
-    return false_blocks / len(allowed)
-
-
-def memory_hit_rate(results: list[dict[str, Any]]) -> float:
-    mem = [r for r in results if r.get("requires_memory")]
-    if not mem:
-        return 1.0
-    hits = sum(1 for r in mem if r.get("memory_hit"))
-    return hits / len(mem)
-
-
-def latency_percentiles(latencies: list[int]) -> dict[str, float]:
-    if not latencies:
-        return {"p50": 0.0, "p95": 0.0, "p99": 0.0, "mean": 0.0}
-    sorted_vals = sorted(latencies)
-    n = len(sorted_vals)
-
-    def pct(p: float) -> float:
-        idx = min(n - 1, max(0, int(math.ceil(p * n) - 1)))
-        return float(sorted_vals[idx])
-
+        return {"citation_precision": None, "citation_recall": None}
+    # Chunk UUID takes precedence. doc#index accepted only when no chunk identifier exists.
+    cited = {
+        str(
+            c.get("chunk_id")
+            or c.get("id")
+            or (
+                str(c["document_id"]) + "#" + str(c["chunk_index"])
+                if c.get("document_id") is not None and c.get("chunk_index") is not None
+                else "__missing_identity_" + str(index)
+            )
+        )
+        for index, c in enumerate(citations)
+    }
+    cited.discard("")
+    gold = set(map(str, gold_chunk_ids))
+    hit = len(cited & gold)
     return {
-        "p50": pct(0.50),
-        "p95": pct(0.95),
-        "p99": pct(0.99),
-        "mean": float(mean(sorted_vals)),
+        "citation_precision": hit / len(cited) if cited else 0.0,
+        "citation_recall": hit / len(gold),
     }
 
 
-def aggregate_metrics(rows: list[dict[str, Any]]) -> dict[str, Any]:
+def citation_accuracy(citations, gold_chunk_ids):
+    """Deprecated name retained for API compatibility; v2 means exact precision."""
+    return citation_scores(citations, gold_chunk_ids)["citation_precision"]
+
+
+def path_nodes(path):
+    text = " → ".join(path) if not isinstance(path, str) else path
+    # Full typed nodes only. Relationship names cannot match a node.
+    return [
+        (a.lower(), b.upper())
+        for a, b in re.findall(
+            r"\b(Supplier|Material|Product|Order|Customer|RiskEvent|DeliveryEvent|QualityIssue)\s*[: ]\s*([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)\b",
+            text,
+            re.I,
+        )
+    ]
+
+
+def graph_path_hit_rate(found_paths, gold_paths):
+    if not gold_paths:
+        return None
+    expected = [path_nodes(p) for p in gold_paths]
+    observed = [path_nodes(p) for p in found_paths]
+    # Exact complete ordered typed sequence: no prefixes, reversal or partial-path credit.
+    return sum(bool(g) and g in observed for g in expected) / len(expected)
+
+
+def entity_recall(found_entities, gold_entities):
+    if not gold_entities:
+        return None
+    gold = {e.upper() for e in gold_entities}
+    return len(gold & {e.upper() for e in found_entities}) / len(gold)
+
+
+def _rate(rows, predicate):
+    return sum(bool(predicate(r)) for r in rows) / len(rows) if rows else None
+
+
+def permission_violation_rate(results):
+    rows = [
+        r
+        for r in results
+        if r.get("requires_permission") and r.get("permission_violation") is not None
+    ]
+    return _rate(rows, lambda r: r["permission_violation"])
+
+
+def blocked_accuracy(results):
+    rows = [r for r in results if r.get("should_be_blocked")]
+    return _rate(rows, lambda r: r.get("decision") == "denied")
+
+
+def allowed_accuracy(results):
+    rows = [
+        r
+        for r in results
+        if not r.get("should_be_blocked") and r.get("requires_permission")
+    ]
+    # Access decision, not successful retrieval quality. No-evidence stays separate.
+    return _rate(rows, lambda r: r.get("decision") in {"allow", "no_evidence"})
+
+
+def false_block_rate(results):
+    rows = [
+        r
+        for r in results
+        if not r.get("should_be_blocked") and r.get("requires_permission")
+    ]
+    return _rate(rows, lambda r: r.get("decision") == "denied")
+
+
+def memory_hit_rate(results):
+    return _rate(
+        [r for r in results if r.get("requires_memory")], lambda r: r.get("memory_hit")
+    )
+
+
+def latency_percentiles(latencies):
+    if not latencies:
+        return {k: None for k in ["p50", "p95", "p99", "mean"]}
+    vals = sorted(latencies)
+    return {
+        **{
+            k: float(vals[min(len(vals) - 1, max(0, math.ceil(p * len(vals)) - 1))])
+            for k, p in [("p50", 0.5), ("p95", 0.95), ("p99", 0.99)]
+        },
+        "mean": float(mean(vals)),
+    }
+
+
+def aggregate_metrics(rows):
     if not rows:
         return {}
-    latencies = [int(r.get("latency_ms", 0)) for r in rows]
-    perc = latency_percentiles(latencies)
-    failures = sum(1 for r in rows if r.get("failure"))
-    return {
+    keys = [
+        "recall_at_k",
+        "precision_at_k",
+        "mrr",
+        "ndcg_at_k",
+        "citation_accuracy",
+        "citation_precision",
+        "citation_recall",
+        "graph_path_hit_rate",
+        "entity_recall",
+    ]
+    result = {
+        "scorer_version": SCORER_VERSION,
         "count": len(rows),
-        "recall_at_k": float(mean([r.get("recall_at_k", 0) for r in rows])) if rows else 0.0,
-        "precision_at_k": float(mean([r.get("precision_at_k", 0) for r in rows])) if rows else 0.0,
-        "mrr": float(mean([r.get("mrr", 0) for r in rows])) if rows else 0.0,
-        "ndcg_at_k": float(mean([r.get("ndcg_at_k", 0) for r in rows])) if rows else 0.0,
-        "citation_accuracy": float(mean([r.get("citation_accuracy", 0) for r in rows])) if rows else 0.0,
-        "graph_path_hit_rate": float(mean([r.get("graph_path_hit_rate", 0) for r in rows if r.get("graph_path_hit_rate") is not None])) if any(r.get("graph_path_hit_rate") is not None for r in rows) else None,
-        "entity_recall": float(mean([r.get("entity_recall", 0) for r in rows if r.get("entity_recall") is not None])) if any(r.get("entity_recall") is not None for r in rows) else None,
-        "permission_violation_rate": permission_violation_rate(rows),
-        "blocked_accuracy": blocked_accuracy(rows),
-        "allowed_accuracy": allowed_accuracy(rows),
-        "false_block_rate": false_block_rate(rows),
-        "memory_hit_rate": memory_hit_rate(rows),
-        "latency_ms": perc["mean"],
-        "p50_latency_ms": perc["p50"],
-        "p95_latency_ms": perc["p95"],
-        "p99_latency_ms": perc["p99"],
-        "token_usage_total": sum(int(r.get("token_usage_total", 0) or 0) for r in rows),
-        "failure_rate": failures / len(rows),
-        "unsafe_retrieval_count": sum(1 for r in rows if r.get("unsafe_retrieval")),
+        "metric_denominators": {},
     }
+    for key in keys:
+        vals = [r[key] for r in rows if r.get(key) is not None]
+        result[key] = float(mean(vals)) if vals else None
+        result["metric_denominators"][key] = len(vals)
+    result.update(
+        permission_violation_rate=permission_violation_rate(rows),
+        blocked_accuracy=blocked_accuracy(rows),
+        allowed_accuracy=allowed_accuracy(rows),
+        false_block_rate=false_block_rate(rows),
+        memory_hit_rate=memory_hit_rate(rows),
+    )
+    perc = latency_percentiles(
+        [r["latency_ms"] for r in rows if r.get("latency_ms") is not None]
+    )
+    result.update(
+        latency_ms=perc["mean"],
+        p50_latency_ms=perc["p50"],
+        p95_latency_ms=perc["p95"],
+        p99_latency_ms=perc["p99"],
+        token_usage_total=sum(int(r.get("token_usage_total", 0) or 0) for r in rows),
+        failure_rate=sum(bool(r.get("failure")) for r in rows) / len(rows),
+        unsafe_retrieval_count=sum(bool(r.get("unsafe_retrieval")) for r in rows),
+        decision_counts={
+            d: sum(r.get("decision") == d for r in rows)
+            for d in ["allow", "denied", "no_evidence", "error"]
+        },
+    )
+    return result

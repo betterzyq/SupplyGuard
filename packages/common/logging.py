@@ -18,6 +18,8 @@ def setup_logging(*, debug: bool = False) -> None:
             "<level>{message}</level>"
         ),
         enqueue=True,
+        diagnose=False,
+        backtrace=False,
     )
 
 

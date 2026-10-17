@@ -1,34 +1,34 @@
-"""Authorization constants and mappings."""
+"""Two-role enterprise policy; legacy department labels are metadata only."""
 
-SECURITY_LEVEL_RANK: dict[str, int] = {
+AUTHORIZATION_POLICY_VERSION = "enterprise-v2"
+SECURITY_LEVEL_RANK = {
     "public": 0,
     "internal": 1,
     "department": 2,
     "confidential": 3,
     "executive": 4,
 }
+LEGACY_ENTERPRISE_ROLES = frozenset(
+    {
+        "executive",
+        "procurement_manager",
+        "procurement_staff",
+        "logistics_manager",
+        "finance_manager",
+        "quality_manager",
+    }
+)
+ROLE_MAX_SECURITY_RANK = {"admin": 4, "enterprise": 4}
+DEFAULT_ROLES = [("admin", "管理员（开发人员）"), ("enterprise", "企业用户")]
 
-ROLE_MAX_SECURITY_RANK: dict[str, int] = {
-    "admin": 4,
-    "executive": 4,
-    "procurement_manager": 3,
-    "finance_manager": 3,
-    "quality_manager": 3,
-    "logistics_manager": 2,
-    "procurement_staff": 2,
-    "external_supplier": 1,
-}
 
-DEFAULT_ROLES: list[tuple[str, str]] = [
-    ("admin", "System administrator"),
-    ("procurement_manager", "Procurement manager"),
-    ("procurement_staff", "Procurement staff"),
-    ("logistics_manager", "Logistics manager"),
-    ("finance_manager", "Finance manager"),
-    ("quality_manager", "Quality manager"),
-    ("executive", "Executive"),
-    ("external_supplier", "External supplier portal user"),
-]
+def normalize_roles(roles: list[str]) -> list[str]:
+    """Do not elevate unknown or retired supplier-portal accounts."""
+    if "admin" in roles:
+        return ["admin"]
+    if "enterprise" in roles or LEGACY_ENTERPRISE_ROLES.intersection(roles):
+        return ["enterprise"]
+    return []
 
 
 def security_level_to_rank(security_level: str) -> int:
@@ -38,6 +38,4 @@ def security_level_to_rank(security_level: str) -> int:
 
 
 def get_max_security_rank_for_roles(roles: list[str]) -> int:
-    if not roles:
-        return 0
-    return max(ROLE_MAX_SECURITY_RANK.get(role, 0) for role in roles)
+    return 4 if normalize_roles(roles) else 0

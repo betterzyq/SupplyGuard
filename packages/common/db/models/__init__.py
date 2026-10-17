@@ -40,3 +40,5 @@ __all__ = [
     "User",
     "UserRole",
 ]
+
+from packages.common.db.models import workspace as workspace  # noqa: E402,F401

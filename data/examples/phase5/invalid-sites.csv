@@ -1,0 +1,3 @@
+﻿code,name,site_type,latitude,longitude,country
+P5-VALID-PART,有效行也不能部分入库,factory,22,114,CN
+P5-BAD-LAT,无效纬度,factory,91,114,CN

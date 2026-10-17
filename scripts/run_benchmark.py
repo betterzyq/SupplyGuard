@@ -16,29 +16,43 @@ if str(ROOT) not in sys.path:
 
 logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
-from packages.benchmarks.benchmark_runner import BenchmarkConfig, load_admin_context, run_benchmark  # noqa: E402
+from packages.benchmarks.benchmark_runner import (  # noqa: E402
+    BenchmarkConfig,
+    load_admin_context,
+    run_benchmark,
+)  # noqa: E402
 from packages.common.db.session import get_session_factory  # noqa: E402
-from packages.observability.trace_context import resolve_trace_id, set_trace_id  # noqa: E402
+from packages.observability.trace_context import (  # noqa: E402
+    resolve_trace_id,
+    set_trace_id,
+)  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run SupplyGuard benchmark")
+    parser.add_argument("--dataset", type=Path, default=None)
     parser.add_argument("--name", default="cli_benchmark")
-    parser.add_argument("--mode", default="secure_rag", choices=[
-        "naive_rag",
-        "secure_rag",
-        "hybrid_rag",
-        "secure_rag_memory",
-        "hybrid_rag_memory",
-        "graphrag",
-        "memory",
-        "permission",
-        "all",
-    ])
+    parser.add_argument(
+        "--mode",
+        default="secure_rag",
+        choices=[
+            "naive_rag",
+            "secure_rag",
+            "hybrid_rag",
+            "secure_rag_memory",
+            "hybrid_rag_memory",
+            "graphrag",
+            "memory",
+            "permission",
+            "all",
+        ],
+    )
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--top-k", type=int, default=5)
     parser.add_argument("--chunk-size", type=int, default=512)
-    parser.add_argument("--permission-filter", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument(
+        "--permission-filter", action=argparse.BooleanOptionalAction, default=True
+    )
     parser.add_argument("--memory", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--no-export", action="store_true")
@@ -49,6 +63,7 @@ async def main() -> int:
     args = parse_args()
     config = BenchmarkConfig(
         name=args.name,
+        dataset_path=args.dataset,
         mode=args.mode,
         limit=args.limit,
         dry_run=args.dry_run,

@@ -1,73 +1,103 @@
 "use client";
 
-import { displayLabel } from "@/lib/labels";
 import Link from "next/link";
-import { PageHeader } from "@/components/layout/PageHeader";
-import { SectionCard } from "@/components/common/SectionCard";
-
-const EVENTS = [
-  {
-    id: "RE-001",
-    title: "SUP-001 港口拥堵延误",
-    event_type: "delivery_delay",
-    severity: "high",
-    supplier: "SUP-001",
-    detected_at: "2024-06-15",
-    status: "active",
-    action: "评估替代供应商 SUP-004",
-  },
-  {
-    id: "RE-002",
-    title: "M002 尺寸公差异常",
-    event_type: "quality_failure",
-    severity: "medium",
-    supplier: "SUP-001",
-    detected_at: "2024-06-10",
-    status: "investigating",
-    action: "查看质量报告",
-  },
-  {
-    id: "RE-003",
-    title: "SUP-003 清关延误",
-    event_type: "delivery_delay",
-    severity: "medium",
-    supplier: "SUP-003",
-    detected_at: "2024-06-08",
-    status: "monitoring",
-    action: "查询交付状态",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import {
+  getBusinessOverview,
+  useBusinessScenario,
+  businessDate,
+  moneyCny,
+  riskLabels,
+} from "@/lib/business";
+import { useAuthStore } from "@/stores/auth";
 
 export default function RiskEventsPage() {
-  return (
-    <div>
-      <PageHeader
-        title="风险事件中心"
-        description="从风险发现、影响分析到 Agent 响应，事件与演示图谱数据关联。"
-      />
-      <p className="mb-4 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-        演示数据：事件卡片关联演示图谱中的交付事件、风险事件及 GraphRAG 分析入口。
+  const user = useAuthStore((s) => s.user);
+  const { scenarioId, selectScenario } = useBusinessScenario();
+  const query = useQuery({
+    queryKey: ["business-overview", user?.tenant_id, user?.id, scenarioId],
+    queryFn: () => getBusinessOverview(scenarioId),
+  });
+  if (query.isPending)
+    return <p className="text-slate-500">正在加载风险研判…</p>;
+  if (query.isError)
+    return (
+      <p role="alert">
+        风险数据不可用。
+        <button onClick={() => query.refetch()} className="ml-2 underline">
+          重试
+        </button>
       </p>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {EVENTS.map((ev) => (
-          <SectionCard key={ev.id} title={ev.title}>
-            <div className="space-y-2 text-sm">
-              <p className="text-xs text-slate-500">{displayLabel(ev.event_type)} · {ev.detected_at}</p>
-              <span className={`inline-block rounded-full border px-2 py-0.5 text-xs font-medium ${ev.severity === "high" ? "border-red-200 bg-red-100 text-red-800" : "border-yellow-200 bg-yellow-100 text-yellow-800"}`}>{displayLabel(ev.severity)}风险</span>
-              <p>供应商：<strong>{ev.supplier}</strong></p>
-              <p className="text-slate-600">{ev.action}</p>
-              <div className="flex gap-2 pt-2">
-                <Link href={`/supply-chain?source=${ev.supplier}`} className="text-xs text-brand-600 hover:underline">
-                  查看影响图谱 →
-                </Link>
-                <Link href="/graphrag" className="text-xs text-brand-600 hover:underline">
-                  GraphRAG →
-                </Link>
-              </div>
-            </div>
-          </SectionCard>
+    );
+  const data = query.data;
+  return (
+    <div className="mx-auto max-w-6xl space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold text-slate-900">风险研判</h1>
+        <p className="mt-2 text-sm text-slate-500">
+          从风险信号追踪关联订单，明确需要进一步核实的业务影响。
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {data.scenarios.map((s) => (
+          <button
+            key={s.id}
+            aria-pressed={s.id === scenarioId}
+            onClick={() => selectScenario(s.id)}
+            className={`rounded-lg border px-4 py-2 text-sm ${s.id === scenarioId ? "border-brand-600 bg-brand-50 text-brand-700" : "bg-white text-slate-500"}`}
+          >
+            {s.name}
+          </button>
         ))}
       </div>
+      <p className="rounded-xl border border-amber-100 bg-amber-50 p-4 text-xs leading-relaxed text-amber-800">
+        模拟业务数据 · {data.provenance.dataset_version} ·{" "}
+        {businessDate(data.provenance.as_of)}
+        （北京时间）。关联订单由场景设定；实际缺料和延期请进入影响模拟核对。
+      </p>
+      {data.risk_events.map((e) => (
+        <section
+          key={e.id}
+          className="rounded-2xl border border-slate-200 bg-white p-6"
+        >
+          <div className="flex flex-wrap justify-between gap-2">
+            <h2 className="font-semibold text-slate-800">{e.name}</h2>
+            <span className="text-xs text-orange-700">
+              {riskLabels[e.severity]}
+            </span>
+          </div>
+          <p className="mt-3 text-sm text-slate-500">{e.description}</p>
+          <div className="mt-5 divide-y divide-slate-100">
+            {data.orders
+              .filter((o) => o.risk_event_ids.includes(e.id))
+              .map((o) => (
+                <div
+                  key={o.id}
+                  className="flex flex-wrap justify-between gap-3 py-3 text-sm"
+                >
+                  <span className="text-slate-700">
+                    {o.id} · {o.product_name}
+                  </span>
+                  <span className="tabular-nums text-slate-500">
+                    {moneyCny(o.amount_cny)}
+                  </span>
+                </div>
+              ))}
+          </div>
+          <Link
+            href={`/actions?demo_event=${e.id}&scenario=${scenarioId}`}
+            className="mt-4 inline-block rounded-lg border px-3 py-2 text-sm text-indigo-600"
+          >
+            建立处置任务
+          </Link>
+          <p className="mt-3 text-xs text-slate-400">
+            仅列出未交付、未取消订单；同一订单可能关联多个事件，总览金额已去重。
+          </p>
+        </section>
+      ))}
+      <Link href="/dashboard" className="inline-block text-sm text-brand-600">
+        返回经营总览核对风险敞口 →
+      </Link>
     </div>
   );
 }

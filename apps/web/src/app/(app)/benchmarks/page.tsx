@@ -1,330 +1,130 @@
 "use client";
-
-import { displayLabel, errorLabel } from "@/lib/labels";
-import { useEffect, useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import ReactECharts from "echarts-for-react";
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { SectionCard } from "@/components/common/SectionCard";
-import { StatCard } from "@/components/common/StatCard";
-import { listBenchmarkRuns, runBenchmark } from "@/lib/api";
-import { useAuthStore } from "@/stores/auth";
-import { cn } from "@/lib/utils";
-
-const BENCHMARK_MODES = [
-  { value: "secure_rag", label: "Secure RAG" },
-  { value: "graphrag", label: "GraphRAG" },
-  { value: "memory", label: "记忆能力" },
-  { value: "permission", label: "权限控制" },
-  { value: "all", label: "全部模式" },
-] as const;
-
-function num(v: unknown): number | null {
-  return typeof v === "number" && !Number.isNaN(v) ? v : null;
-}
-
-function pct(v: number | null, digits = 0): string {
-  if (v == null) return "—";
-  return `${(v * 100).toFixed(digits)}%`;
-}
+import { listBenchmarkRuns } from "@/lib/api";
+import { getContracts } from "@/lib/prediction";
 
 export default function BenchmarksPage() {
-  const user = useAuthStore((s) => s.user);
-  const isAdmin = user?.roles.includes("admin");
-  const queryClient = useQueryClient();
-
-  const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
-  const [pendingRunId, setPendingRunId] = useState<string | null>(null);
-  const [runName, setRunName] = useState("web_benchmark");
-  const [runMode, setRunMode] = useState<(typeof BENCHMARK_MODES)[number]["value"]>("secure_rag");
-  const [runLimit, setRunLimit] = useState(10);
-
-  const { data: runs, isError, error, isLoading } = useQuery({
-    queryKey: ["benchmark-runs"],
+  const contracts = useQuery({
+    queryKey: ["evaluation-contracts"],
+    queryFn: getContracts,
+  });
+  const history = useQuery({
+    queryKey: ["benchmark-history"],
     queryFn: () => listBenchmarkRuns(20),
-    enabled: isAdmin,
-    refetchInterval: (query) => {
-      const items = query.state.data;
-      const hasRunning =
-        pendingRunId != null || items?.some((r) => r.status === "running" || r.status === "queued");
-      return hasRunning ? 3000 : false;
-    },
   });
-
-  useEffect(() => {
-    if (!pendingRunId || !runs?.length) return;
-    const pending = runs.find((r) => r.id === pendingRunId);
-    if (pending && (pending.status === "completed" || pending.status === "failed")) {
-      setPendingRunId(null);
-      setSelectedRunId(pendingRunId);
-    }
-  }, [runs, pendingRunId]);
-
-  useEffect(() => {
-    if (!runs?.length) return;
-    if (!selectedRunId || !runs.some((r) => r.id === selectedRunId)) {
-      setSelectedRunId(runs[0].id);
-    }
-  }, [runs, selectedRunId]);
-
-  const selectedRun = useMemo(
-    () => runs?.find((r) => r.id === selectedRunId) ?? runs?.[0],
-    [runs, selectedRunId]
-  );
-
-  const summary = selectedRun?.summary as Record<string, unknown> | undefined;
-  const recall = num(summary?.recall_at_k);
-  const citation = num(summary?.citation_accuracy);
-  const graphHit = num(summary?.graph_path_hit_rate);
-  const memoryHit = num(summary?.memory_hit_rate);
-  const blocked = num(summary?.blocked_accuracy);
-  const permViolation = num(summary?.permission_violation_rate);
-  const p95 = num(summary?.p95_latency_ms);
-
-  const runMutation = useMutation({
-    mutationFn: () =>
-      runBenchmark({
-        name: runName.trim() || "web_benchmark",
-        mode: runMode,
-        limit: runLimit,
-        config: { permission_filter: true, top_k: 5 },
-      }),
-    onSuccess: async (res) => {
-      await queryClient.invalidateQueries({ queryKey: ["benchmark-runs"] });
-      if (res.benchmark_run_id) {
-        setSelectedRunId(res.benchmark_run_id);
-        if (res.status === "running") {
-          setPendingRunId(res.benchmark_run_id);
-        } else {
-          setPendingRunId(null);
-        }
-      }
-    },
-  });
-
-  const isJobRunning =
-    pendingRunId != null || runs?.some((r) => r.status === "running" || r.status === "queued");
-
-  const radarOption = summary
-    ? {
-        tooltip: {},
-        radar: {
-          indicator: [
-            { name: "召回率（Recall@K）", max: 1 },
-            { name: "引用准确率", max: 1 },
-            { name: "图谱命中率", max: 1 },
-            { name: "记忆命中率", max: 1 },
-            { name: "拦截准确率", max: 1 },
-          ],
-        },
-        series: [
-          {
-            type: "radar",
-            data: [
-              {
-                value: [
-                  recall ?? 0,
-                  citation ?? 0,
-                  graphHit ?? 0,
-                  memoryHit ?? 0,
-                  blocked ?? 0,
-                ],
-                name: selectedRun?.name || selectedRun?.mode || "基准评测",
-                areaStyle: { opacity: 0.15 },
-              },
-            ],
-          },
-        ],
-      }
-    : null;
-
-  if (!isAdmin) {
-    return (
-      <div>
-        <PageHeader title="基准评测" description="仅管理员可访问，查看确定性评测结果。" />
-        <p className="text-sm text-red-600">基准评测需要管理员权限，请使用 admin@example.com 登录。</p>
-      </div>
-    );
-  }
-
   return (
-    <div>
+    <div className="space-y-5">
       <PageHeader
         title="基准评测实验"
-        description="评估 Secure RAG、GraphRAG、记忆能力与权限控制的效果。"
+        description="分别审计评分器、两类角色权限和历史记录；公开订单预测在独立页面验证。"
       />
-
-      <SectionCard title="运行基准评测" className="mb-6">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <label className="block text-sm">
-            <span className="text-slate-600">实验名称</span>
-            <input
-              value={runName}
-              onChange={(e) => setRunName(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
-              placeholder="输入实验名称"
-            />
-          </label>
-          <label className="block text-sm">
-            <span className="text-slate-600">评测模式</span>
-            <select
-              value={runMode}
-              onChange={(e) => setRunMode(e.target.value as typeof runMode)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            >
-              {BENCHMARK_MODES.map((m) => (
-                <option key={m.value} value={m.value}>
-                  {m.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block text-sm">
-            <span className="text-slate-600">题目数量上限</span>
-            <input
-              type="number"
-              min={1}
-              max={500}
-              value={runLimit}
-              onChange={(e) => setRunLimit(Number(e.target.value) || 10)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            />
-          </label>
-          <div className="flex items-end">
+      <p className="rounded-xl border border-amber-100 bg-amber-50 p-4 text-sm text-amber-800">
+        历史岗位权限基准不适用于
+        enterprise-v2；旧分数已废弃，不与新版本比较。历史执行入口已停用，保留记录供追溯。
+      </p>
+      <section className="rounded-2xl border bg-white p-5">
+        <h2 className="font-semibold">enterprise-v2 离线评分与权限检查</h2>
+        <p className="mt-2 text-sm leading-6 text-slate-500">
+          检查完整有向路径、精确引用
+          precision/recall、拒绝与无证据区分，以及真实权限函数的同租户共享与跨租户拒绝。未运行在线检索、LLM
+          回答质量或记忆检索实验。
+        </p>
+        {contracts.isPending && <p className="mt-4">正在检查…</p>}
+        {contracts.isError && (
+          <p role="alert" className="mt-4 text-red-600">
+            检查读取失败。
             <button
-              type="button"
-              onClick={() => runMutation.mutate()}
-              disabled={runMutation.isPending || isJobRunning}
-              className="w-full rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+              onClick={() => contracts.refetch()}
+              className="ml-2 underline"
             >
-              {runMutation.isPending ? "提交中…" : isJobRunning ? "运行中…" : "运行评测"}
+              重试
             </button>
-          </div>
-        </div>
-        {(runMutation.isPending || isJobRunning) && (
-          <p className="mt-3 text-sm text-amber-700 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
-            基准评测已在后台运行，页面将每 3 秒自动刷新状态。100 题约需 5–10 分钟，请勿关闭页面。
           </p>
         )}
-        {runMutation.isError && (
-          <p className="mt-3 text-sm text-red-600 rounded-lg border border-red-200 bg-red-50 px-3 py-2">
-            提交失败：{errorLabel((runMutation.error as Error)?.message, "未知错误")}
-          </p>
-        )}
-        {runMutation.isSuccess && runMutation.data.status === "running" && (
-          <p className="mt-3 text-sm text-blue-700 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2">
-            任务已提交（运行 ID：{runMutation.data.benchmark_run_id?.slice(0, 8)}…），等待后台完成…
-          </p>
-        )}
-        {runMutation.isSuccess && runMutation.data.status === "completed" && (
-          <p className="mt-3 text-sm text-green-700 rounded-lg border border-green-200 bg-green-50 px-3 py-2">
-            运行完成。
-          </p>
-        )}
-      </SectionCard>
-
-      {isError && (
-        <p className="mb-4 text-sm text-red-600 rounded-lg border border-red-200 bg-red-50 px-3 py-2">
-          无法加载基准评测数据：{errorLabel((error as Error)?.message, "请确认已使用管理员账号登录，且 API 已启动")}
-        </p>
-      )}
-
-      {!isLoading && !isError && (!runs || runs.length === 0) && !isJobRunning && (
-        <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          <p className="font-medium">暂无基准评测记录</p>
-          <p className="mt-1 text-amber-800">使用上方表单开始首次评测，或在项目根目录执行命令：</p>
-          <pre className="mt-2 overflow-x-auto rounded bg-white/80 p-2 text-xs text-slate-800">
-            {`make generate-eval\nmake bench`}
-          </pre>
-        </div>
-      )}
-
-      {selectedRun && (
-        <p className="mb-3 text-sm text-slate-500">
-          当前查看：<span className="font-medium text-slate-800">{selectedRun.name}</span>
-          <span className="mx-2">·</span>
-          {displayLabel(selectedRun.mode)}
-          <span className="mx-2">·</span>
-          {displayLabel(selectedRun.status)}
-        </p>
-      )}
-
-      <div className="grid gap-4 sm:grid-cols-4 mb-6">
-        <StatCard title="引用准确率" value={pct(citation)} />
-        <StatCard
-          title="越权率"
-          value={pct(permViolation, 1)}
-          subtitle="目标：0%"
-        />
-        <StatCard
-          title="图谱路径命中率"
-          value={pct(graphHit)}
-          subtitle={graphHit == null && selectedRun ? "当前模式不包含图谱指标" : undefined}
-        />
-        <StatCard
-          title="P95 响应耗时"
-          value={p95 != null ? `${Math.round(p95)}ms` : "—"}
-        />
-      </div>
-
-      {radarOption && (
-        <SectionCard title="评测指标雷达图">
-          <ReactECharts option={radarOption} style={{ height: 360 }} />
-          {graphHit == null && (
-            <p className="mt-2 text-xs text-slate-500">当前评测暂无有效图谱命中率；仅 GraphRAG 或全部模式包含该指标。</p>
-          )}
-        </SectionCard>
-      )}
-
-      <SectionCard title="最近评测记录" className="mt-6">
-        <p className="mb-3 text-xs text-slate-500">点击一行以切换上方指标与雷达图</p>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b text-left text-slate-500">
-              <th className="pb-2 pr-4">实验名称</th>
-              <th className="pb-2 pr-4">评测模式</th>
-              <th className="pb-2 pr-4">运行状态</th>
-              <th className="pb-2">开始时间</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(runs || []).map((r) => {
-              const active = r.id === selectedRunId;
-              return (
-                <tr
-                  key={r.id}
-                  onClick={() => setSelectedRunId(r.id)}
-                  className={cn(
-                    "border-b border-slate-50 cursor-pointer transition-colors",
-                    active ? "bg-brand-50 hover:bg-brand-50" : "hover:bg-slate-50"
-                  )}
-                >
-                  <td className={cn("py-2 pr-4", active && "font-medium text-brand-700")}>{r.name}</td>
-                  <td className="py-2 pr-4">{displayLabel(r.mode)}</td>
-                  <td className="py-2 pr-4">
+        {contracts.data && (
+          <div className="mt-5" data-testid="evaluation-contracts">
+            <div className="grid gap-3 sm:grid-cols-3">
+              {[
+                [
+                  "评分与权限契约",
+                  `${contracts.data.evaluated_contracts} 项 · ${contracts.data.status === "passed" ? "全部通过" : "存在失败"}`,
+                ],
+                [
+                  "已校正图路径金标准",
+                  `${contracts.data.gold_only_cases} 题 · 尚未在线实测`,
+                ],
+                ["实际检索质量", "未实测，不报告准确率"],
+              ].map(([a, b]) => (
+                <div key={a} className="rounded-xl bg-slate-50 p-4">
+                  <p className="text-xs text-slate-400">{a}</p>
+                  <p className="mt-2 text-sm font-medium">{b}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 break-all text-xs leading-6 text-slate-400">
+              {contracts.data.dataset_version} / {contracts.data.scorer_version}
+              <br />
+              数据集 SHA256 {contracts.data.dataset_sha256}
+            </p>
+            <details className="mt-4 text-xs">
+              <summary className="cursor-pointer text-indigo-600">
+                查看逐项检查与待实测金标准
+              </summary>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                {contracts.data.rows.map((r) => (
+                  <div key={r.id} className="rounded-lg border p-3">
+                    <span className="font-mono">{r.id}</span>
                     <span
-                      className={cn(
-                        "inline-flex rounded-full px-2 py-0.5 text-xs",
-                        r.status === "completed"
-                          ? "bg-green-100 text-green-800"
-                          : r.status === "failed"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-amber-100 text-amber-800"
-                      )}
+                      className={`ml-3 ${r.status === "failed" ? "text-red-600" : "text-slate-400"}`}
                     >
-                      {displayLabel(r.status)}
+                      {r.status === "gold_only"
+                        ? "金标准 / 待在线实测"
+                        : r.status === "passed"
+                          ? "通过"
+                          : "失败"}
                     </span>
-                  </td>
-                  <td className="py-2 text-slate-500 text-xs">
-                    {r.started_at ? new Date(r.started_at).toLocaleString("zh-CN") : "—"}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        {isLoading && <p className="py-4 text-sm text-slate-500">加载中…</p>}
-      </SectionCard>
+                  </div>
+                ))}
+              </div>
+            </details>
+          </div>
+        )}
+      </section>
+      <Link
+        href="/prediction"
+        className="block rounded-2xl border border-indigo-100 bg-indigo-50 p-5 text-sm text-indigo-800"
+      >
+        查看公开历史订单的预测基线、锁定测试集、图特征消融与失败样例 →
+      </Link>
+      <section className="rounded-2xl border bg-white p-5">
+        <h2 className="font-semibold">历史实验记录（已废弃口径）</h2>
+        <p className="mt-2 text-xs text-slate-500">
+          旧结果原样保留；无法按新指标直接重算，因旧运行缺少完整观察证据。
+        </p>
+        {history.isError && (
+          <p className="mt-3 text-sm text-red-600">历史记录读取失败。</p>
+        )}
+        <div className="mt-4 space-y-2">
+          {history.data?.length === 0 && (
+            <p className="text-sm text-slate-400">暂无历史记录。</p>
+          )}
+          {history.data?.map((r) => (
+            <div
+              key={r.id}
+              className="flex flex-wrap justify-between gap-3 rounded-lg bg-slate-50 p-3 text-xs text-slate-500"
+            >
+              <span>
+                {r.name} · {r.mode}
+              </span>
+              <span>
+                {r.started_at?.slice(0, 10)} · {r.status} · 历史口径
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

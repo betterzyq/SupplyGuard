@@ -62,13 +62,22 @@ async def login(
                 ip_address=ip_address,
             )
         await session.commit()
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
+        )
 
     if not user.is_active:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is inactive")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="User is inactive"
+        )
 
-    user.last_login_at = datetime.now(UTC)
     ctx = user_to_context(user)
+    if not ctx.is_member:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account has no active platform role",
+        )
+    user.last_login_at = datetime.now(UTC)
     token = create_access_token(
         subject=str(user.id),
         claims={

@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.api.deps import require_admin
@@ -35,13 +35,14 @@ class AuditLogListResponse(BaseModel):
 
 @router.get("/audit-logs", response_model=AuditLogListResponse)
 async def list_audit_logs(
-    _: UserContext = Depends(require_admin),
+    user_context: UserContext = Depends(require_admin),
     session: AsyncSession = Depends(get_db_session),
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
 ) -> AuditLogListResponse:
     stmt = (
         select(AuditLog)
+        .where(AuditLog.tenant_id == user_context.tenant_id)
         .order_by(AuditLog.created_at.desc())
         .limit(limit)
         .offset(offset)
@@ -64,5 +65,11 @@ async def list_audit_logs(
             )
             for item in items
         ],
-        total=len(items),
+        total=(
+            await session.execute(
+                select(func.count())
+                .select_from(AuditLog)
+                .where(AuditLog.tenant_id == user_context.tenant_id)
+            )
+        ).scalar_one(),
     )

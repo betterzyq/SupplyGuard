@@ -1,0 +1,2 @@
+﻿code,name,destination_site_code,product_code,customer,amount_cny,currency,promised_at,status
+P5-MISSING-REF,缺失站点订单,SITE-DOES-NOT-EXIST,PRODUCT-01,示例客户,100.00,CNY,2026-11-01T09:00:00+08:00,pending

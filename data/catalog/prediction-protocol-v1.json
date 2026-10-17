@@ -1,0 +1,23 @@
+{
+  "version": "dataco-order-time-v1",
+  "frozen_before_first_fit": "2026-10-17",
+  "seed": 20261017,
+  "domain": "dataco-retail-historical",
+  "unit": "order",
+  "target": "any non-cancelled order item actual shipping days > scheduled days; validate against published label",
+  "exclude_status": ["CANCELED", "SUSPECTED_FRAUD"],
+  "maturity": "max(shipping timestamp, order timestamp + actual days) + 7 days; assumed observation lag, not recorded availability",
+  "train_end": "2017-01-01",
+  "validation_end": "2017-07-01",
+  "test_end": "2018-02-01",
+  "audit_end": "2018-03-01",
+  "history": "training rows only, label available strictly before prediction; validation/test freeze at train_end",
+  "graph": "product/category/market co-occurrence degrees from strictly earlier training orders; frozen at train_end for holdouts",
+  "selection": "maximum validation average precision; ties prefer earlier candidate; test evaluated once after all selection",
+  "threshold": "validation F1 maximum on 0.05..0.95 step 0.05; ties prefer lower threshold",
+  "budget": {"logistic_C": [0.1, 1.0], "lightgbm_leaves": [15, 31], "trees": 120, "threads": 2, "training_fits": 8},
+  "bootstrap": {"resamples": 200, "block": "order calendar week", "confidence": 0.95},
+  "baseline": ["global_train_rate", "mature_product_history", "fixed_shipping_rule", "quoted_amount_ranking"],
+  "metrics": ["average_precision", "recall_at_5_10_20_percent", "precision_at_k", "precision_recall_f1_at_validation_threshold", "brier", "ece_10_equal_width_bins", "subgroup", "block_bootstrap_ci"],
+  "limitations": ["public retrospective retail data", "actual ingestion timestamps unavailable", "status-based outcome cohort selection", "shipping/delivery terminology ambiguous", "currency not documented; amounts are original units", "no manufacturing transfer validation", "no delay-days regression task"]
+}

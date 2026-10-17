@@ -25,10 +25,12 @@ export const useAuthStore = create<AuthState>()(
         if (typeof window !== "undefined") {
           localStorage.removeItem("sg_token");
           localStorage.removeItem("sg_user");
+          for (const key of Object.keys(localStorage))
+            if (key.startsWith("sg-network-v2:")) localStorage.removeItem(key);
         }
         set({ token: null, user: null });
       },
     }),
-    { name: "sg-auth" }
-  )
+    { name: "sg-auth" },
+  ),
 );

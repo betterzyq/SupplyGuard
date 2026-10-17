@@ -1,0 +1,18 @@
+# Exact numeric/plotting runtime used in SupplyGuard P4; Python 3.11.
+numpy==2.4.6
+pandas==3.0.3
+scipy==1.17.1
+scikit-learn==1.8.0
+lightgbm==4.6.0
+joblib==1.5.3
+threadpoolctl==3.6.0
+matplotlib==3.10.8
+contourpy==1.3.3
+cycler==0.12.1
+fonttools==4.61.1
+kiwisolver==1.4.9
+pyparsing==3.3.1
+pillow==12.2.0
+packaging==26.2
+python-dateutil==2.9.0.post0
+six==1.17.0

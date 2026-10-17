@@ -1,0 +1,18 @@
+{
+  "protocol_sha256": "153974fbca7100f153813de5688468e9b92caf45176f55f4105ba0f766c3c810",
+  "source_sha256": "fa6d022ed437155e1a2f0378710602848703c8a7f203f7ff5d77805bf8480aa6",
+  "splits": {
+    "train": {
+      "count": 39386,
+      "ids_sha256": "7fdac4dd2dde4aece20b85b2f230aaa417627fb532c4d2def0148930411da793"
+    },
+    "validation": {
+      "count": 9306,
+      "ids_sha256": "7cc5d9f44b909ff3f0353a466c67629b65a45b92fd0908e2a9e5f0a25ebd0cf3"
+    },
+    "test": {
+      "count": 13071,
+      "ids_sha256": "8c58c01cc66b442d1eddca0a8d0fce8e49022f8b67366855bfa4d6c70daf418b"
+    }
+  }
+}

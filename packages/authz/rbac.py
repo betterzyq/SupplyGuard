@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from uuid import UUID
 
-from packages.authz.constants import get_max_security_rank_for_roles
+from packages.authz.constants import get_max_security_rank_for_roles, normalize_roles
 
 
 @dataclass
@@ -22,13 +22,21 @@ class UserContext:
     supplier_id: UUID | None = None
     max_security_rank: int = 0
 
+    def __post_init__(self) -> None:
+        self.roles = normalize_roles(self.roles)
+        self.max_security_rank = get_max_security_rank_for_roles(self.roles)
+
+    @property
+    def is_member(self) -> bool:
+        return bool(set(self.roles) & {"admin", "enterprise"})
+
     @property
     def is_admin(self) -> bool:
         return "admin" in self.roles
 
     @property
     def is_external_supplier(self) -> bool:
-        return "external_supplier" in self.roles
+        return False  # Retired portal; retained for legacy graph/memory adapters.
 
 
 def build_user_context(
@@ -59,7 +67,9 @@ def require_any_role(user_context: UserContext, roles: list[str]) -> PermissionD
     if user_context.is_admin:
         return PermissionDecision(True, "admin bypass")
     if set(user_context.roles) & set(roles):
-        return PermissionDecision(True, f"matched roles: {sorted(set(user_context.roles) & set(roles))}")
+        return PermissionDecision(
+            True, f"matched roles: {sorted(set(user_context.roles) & set(roles))}"
+        )
     return PermissionDecision(False, f"requires one of {roles}")
 
 
@@ -72,9 +82,7 @@ def can_access_admin(user_context: UserContext) -> bool:
 
 
 def can_upload_document(user_context: UserContext) -> bool:
-    if user_context.is_admin:
-        return True
-    return bool(set(user_context.roles) & {"procurement_manager", "finance_manager", "quality_manager"})
+    return user_context.is_member
 
 
 def can_run_benchmark(user_context: UserContext) -> bool:
@@ -82,10 +90,7 @@ def can_run_benchmark(user_context: UserContext) -> bool:
 
 
 def can_call_tool(user_context: UserContext, tool_name: str) -> PermissionDecision:
-    if user_context.is_admin:
-        return PermissionDecision(True, "admin tool access")
-    if tool_name.startswith("supplier_") and user_context.is_external_supplier:
-        return PermissionDecision(True, "supplier scoped tool")
-    if not user_context.is_external_supplier:
-        return PermissionDecision(True, f"internal tool access: {tool_name}")
-    return PermissionDecision(False, f"tool denied for external supplier: {tool_name}")
+    from packages.authz.tool_policy import check_tool_permission
+
+    result = check_tool_permission(user_context, tool_name)
+    return PermissionDecision(result.allowed, result.reason)

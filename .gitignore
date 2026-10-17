@@ -4,7 +4,6 @@
 !.env.example
 
 # Local-only (not published)
-docs/
 references/
 
 # Python
@@ -52,3 +51,6 @@ htmlcov/
 Thumbs.db
 kaggle.json
 .kaggle/
+
+# Isolated frontend verification output
+.next-*/

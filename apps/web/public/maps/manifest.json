@@ -1,0 +1,35 @@
+{
+  "coordinate_system": "WGS84",
+  "basemap": "Natural Earth 1:50m land only; geographic overview, no administrative boundaries or road routing",
+  "glyphs": "No remote glyph endpoint; deck text uses bundled subset font",
+  "sprites": "None; controls use bundled maplibre CSS icons",
+  "remote_runtime_requests": false,
+  "dependencies": {
+    "maplibre-gl": "6.14.0",
+    "@deck.gl/core": "9.4.0",
+    "@deck.gl/layers": "9.4.0",
+    "@deck.gl/maplibre": "9.4.0",
+    "@luma.gl/core": "9.4.0"
+  },
+  "files": {
+    "land.geojson": {
+      "license": "Public Domain",
+      "source": "https://github.com/nvkelso/natural-earth-vector/blob/v5.1.2/geojson/ne_50m_land.geojson",
+      "bytes": 1570749,
+      "sha256": "1b5c388d7588d1138e036e9b2c26f9bd7d8eef540a630fc2d4292deba9da1cf2"
+    },
+    "map-ui.woff2": {
+      "license": "SIL Open Font License 1.1; OFL.txt",
+      "source": "Noto Sans CJK SC Regular, subset from fonts-noto-cjk 1:20220127+repack1-1",
+      "upstream": "https://github.com/notofonts/noto-cjk",
+      "bytes": 229412,
+      "sha256": "2074a227f08e59321270a0fa1372bf54e25ae6538962a92ed4265092459ae696"
+    },
+    "maplibre-gl-worker.mjs": {
+      "license": "BSD-3-Clause",
+      "source": "maplibre-gl npm 6.14.0",
+      "bytes": 508314,
+      "sha256": "5f1e2f0e1624082b7e88a06e4c86085992b0f8c02929801e552f3f7a119856a9"
+    }
+  }
+}

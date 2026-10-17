@@ -31,3 +31,15 @@ body {
 .react-flow__node-supply {
   font-size: 11px;
 }
+
+@font-face {
+  font-family: "SupplyGuardMap";
+  src: url("/maps/map-ui.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+.maplibregl-map { font-family: "SupplyGuardMap", sans-serif; }
+.maplibregl-ctrl-group { background: #132638; border: 1px solid #34516a; }
+.maplibregl-ctrl-group button { filter: invert(0.85); }

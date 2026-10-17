@@ -9,7 +9,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from packages.authz.rbac import UserContext
 from packages.benchmarks.dataset import EvalQuestion
-from packages.benchmarks.evaluators import evaluate_graph_row, extract_entities_from_text
+from packages.benchmarks.evaluators import (
+    evaluate_graph_row,
+    extract_entities_from_text,
+)
 from packages.graphrag.graph_retriever import execute_graph_query
 
 
@@ -41,15 +44,33 @@ async def run_graphrag_benchmark_item(
         found_entities.extend(result.affected_customers)
         found_entities = sorted(set(found_entities))
 
-        graph_metrics = evaluate_graph_row(question, path_texts=path_texts, found_entities=found_entities)
-        blocked = result.permission_decision == "denied" or result.result_count == 0
-        graph_metrics["failure"] = bool(result.error_message) and not blocked
-        graph_metrics["was_blocked_or_no_evidence"] = blocked and question.should_be_blocked
-        graph_metrics["should_be_blocked"] = question.should_be_blocked
-        graph_metrics["requires_permission"] = question.requires_permission
+        graph_metrics = evaluate_graph_row(
+            question, path_texts=path_texts, found_entities=found_entities
+        )
+        decision = (
+            "denied"
+            if result.permission_decision == "denied"
+            else (
+                "error"
+                if result.error_message
+                else ("allow" if result.result_count else "no_evidence")
+            )
+        )
+        graph_metrics.update(
+            decision=decision,
+            failure=decision == "error",
+            should_be_blocked=question.should_be_blocked,
+            requires_permission=question.requires_permission,
+            has_evidence=bool(path_texts),
+            permission_violation=question.should_be_blocked and bool(path_texts),
+        )
 
         return {
-            "predicted_answer": path_texts[0] if path_texts else (result.error_message or "no graph paths"),
+            "predicted_answer": (
+                path_texts[0]
+                if path_texts
+                else (result.error_message or "no graph paths")
+            ),
             "metrics": graph_metrics,
             "latency_ms": result.latency_ms,
             "token_usage": {},

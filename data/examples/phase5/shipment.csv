@@ -1,0 +1,2 @@
+﻿code,name,origin_site_code,destination_site_code,order_codes,mode,eta
+SHIP-NEW,示例运输,SITE-NEW,SITE-NEW,ORDER-NEW,road,2026-10-30T09:00:00+08:00

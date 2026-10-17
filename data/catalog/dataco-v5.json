@@ -1,0 +1,32 @@
+{
+  "dataset_id": "8gx2fvg2k6",
+  "version": 5,
+  "doi": "10.17632/8gx2fvg2k6.5",
+  "title": "DataCo SMART SUPPLY CHAIN FOR BIG DATA ANALYSIS",
+  "source": "https://data.mendeley.com/datasets/8gx2fvg2k6/5",
+  "contributors": [
+    "Fabian Constante",
+    "Fernando Silva",
+    "António Pereira"
+  ],
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "files": [
+    {
+      "filename": "DataCoSupplyChainDataset.csv",
+      "bytes": 95910149,
+      "sha256": "fa6d022ed437155e1a2f0378710602848703c8a7f203f7ff5d77805bf8480aa6",
+      "url": "https://data.mendeley.com/public-files/datasets/8gx2fvg2k6/files/72784be5-36d3-44fe-b75d-0edbf1999f65/file_downloaded"
+    },
+    {
+      "filename": "DescriptionDataCoSupplyChain.csv",
+      "bytes": 3444,
+      "sha256": "9828e34669bd6d77e3b4463364cc44a5d52446b5e246fc258758cfe592566c4b",
+      "url": "https://data.mendeley.com/public-files/datasets/8gx2fvg2k6/files/29dc7b05-dda6-4834-8354-5b5cc44430df/file_downloaded"
+    }
+  ],
+  "excluded_files": {
+    "tokenized_access_logs.csv": "clickstream unrelated to the order-time task; not downloaded"
+  },
+  "raw_data_policy": "Local ignored data only; raw personal fields are never published or used as features."
+}

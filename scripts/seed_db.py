@@ -45,14 +45,8 @@ TENANT_NAME = "Demo Manufacturing Co."
 TENANT_CODE = "demo-mfg"
 
 USERS = [
-    ("admin@example.com", "Admin User", "admin", "admin", None),
-    ("procurement_manager@example.com", "Procurement Manager", "procurement", "procurement_manager", None),
-    ("procurement_staff@example.com", "Procurement Staff", "procurement", "procurement_staff", None),
-    ("logistics_manager@example.com", "Logistics Manager", "logistics", "logistics_manager", None),
-    ("finance_manager@example.com", "Finance Manager", "finance", "finance_manager", None),
-    ("quality_manager@example.com", "Quality Manager", "quality", "quality_manager", None),
-    ("executive@example.com", "Executive User", "executive", "executive", None),
-    ("supplier@example.com", "External Supplier", "external", "external_supplier", "SUP-001"),
+    ("admin@example.com", "平台管理员", "admin", "admin", None),
+    ("enterprise@example.com", "企业用户", "enterprise", "enterprise", None),
 ]
 
 SUPPLIERS = [
@@ -90,7 +84,9 @@ def _doc(
 
 
 DOCUMENTS = [
-    _doc("public-policy", "Public Supply Policy", "policy", "public", "public", "admin"),
+    _doc(
+        "public-policy", "Public Supply Policy", "policy", "public", "public", "admin"
+    ),
     _doc(
         "internal-procurement-guide",
         "Internal Procurement Guide",
@@ -250,7 +246,9 @@ async def seed() -> None:
         doc_models: dict[str, Document] = {}
         for index, spec in enumerate(DOCUMENTS, start=1):
             supplier_id = (
-                supplier_map[spec["supplier_code"]].id if spec.get("supplier_code") else None
+                supplier_map[spec["supplier_code"]].id
+                if spec.get("supplier_code")
+                else None
             )
             document = Document(
                 tenant_id=tenant.id,
@@ -308,7 +306,9 @@ async def seed() -> None:
                     customer_name=f"Customer-{index}",
                     quantity=100 + index,
                     status="open" if index % 2 else "delayed",
-                    expected_delivery_date=(datetime.now(UTC) + timedelta(days=index)).date(),
+                    expected_delivery_date=(
+                        datetime.now(UTC) + timedelta(days=index)
+                    ).date(),
                 )
             )
 
@@ -319,7 +319,9 @@ async def seed() -> None:
                 RiskEvent(
                     tenant_id=tenant.id,
                     supplier_id=supplier.id,
-                    event_type=["delivery", "quality", "financial", "compliance"][index % 4],
+                    event_type=["delivery", "quality", "financial", "compliance"][
+                        index % 4
+                    ],
                     severity=severities[index % len(severities)],
                     title=f"Risk Event {index}",
                     description=f"Auto seeded risk event {index}",
@@ -330,7 +332,9 @@ async def seed() -> None:
             )
 
         await session.commit()
-        print(f"Seed complete: tenant={tenant.code}, documents={len(doc_models)}, chunks={chunk_count}")
+        print(
+            f"Seed complete: tenant={tenant.code}, documents={len(doc_models)}, chunks={chunk_count}"
+        )
 
 
 if __name__ == "__main__":

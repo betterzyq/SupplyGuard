@@ -1,6 +1,25 @@
 # SupplyGuard
 
-面向供应链风险管理与采购决策的工程化 **Agent Harness 平台**——在 RBAC 权限约束下，融合 Secure RAG、GraphRAG、Memory 与 LangGraph 多 Agent 工作流，为采购、物流、质量、财务与高管提供 **可审计、可引用、可评估** 的风险洞察与决策支持。
+面向制造企业的供应链风险预测与韧性决策平台。围绕关键物料、供应商与交付订单，逐步建立风险发现、影响分析、方案比较和处置复盘闭环。
+
+**产品升级入口：[需求、六阶段开发/测试与人工验收文档](docs/README.md)。** P1—P5已获用户人工验收通过；P6交付三场景演示导览、商业价值与可下载假设测算、试点提案、全链路回归和交付手册，等待最终人工验收。公开历史预测、制造模拟与企业上传分别标来源，不宣称制造业模型或真实经营收益已经验证。下方历史架构仅作技术背景，旧岗位权限与历史评测口径已废弃。
+
+当前有效角色：管理员（开发人员）`admin`、企业用户`enterprise`。同企业业务共享，保留租户与个人会话隔离。
+
+```bash
+cd /root/autodl-tmp/SupplyGuard
+make phase6-check       # 全173项测试、独立PostgreSQL、lint、隔离生产构建与类型
+make acceptance-up      # 专用 API 8100 / Web 3100；现有验收服务可继续使用
+make phase6-smoke       # 三场景真实接口闭环及100次串行API采样
+make phase6-browser     # 导览、地图、仿真、重置、测算、503恢复与双角色
+make phase6-regression  # 顺序跑P1—P5浏览器，含离线和1000/2000几何负载
+make phase6-audit       # 模型/业务证据、文件清单、构建指纹、备份与浏览器包检查
+make acceptance-status # 核验归属及端口转发说明
+```
+
+电脑需先转发服务器3100端口，再打开本地登录页。新增入口：`/showcase`演示导览、`/value`商业价值。材料：[5分钟演示](docs/business/demo-script.md)、[商业与试点](docs/business/brief.md)、[运行/备份/回退](docs/operations.md)、[P6报告](docs/reports/phase-6.md)。当前为本地平台交付，计费/托管PaaS、真实承运商/ERP与生产SLA尚未建设。
+
+不要在已有数据库上运行原始 `make seed`：该历史命令会清空数据。新增演示账号由 `acceptance-up` 增量准备，已有密码保持不变。详细操作见 [人工验收手册](docs/manual-acceptance.md)。
 
 ## 系统架构
 
@@ -209,17 +228,14 @@ SupplyGuard/
 
 ---
 
-## 权限模型（摘要）
+## 当前权限模型
 
-| 角色 | 典型能力 |
-|------|----------|
-| admin / executive | 全权限 + Benchmark |
-| procurement_manager | 上传文档、supplier_impact |
-| logistics_manager | delivery_delay_impact |
-| quality_manager | quality_issue_trace |
-| external_supplier | 仅本供应商 scope |
+| 角色 | 能力 |
+|------|------|
+| admin（管理员/开发人员） | 本企业全部业务功能及开发诊断、评测、审计 |
+| enterprise（企业用户） | 本企业业务资料共享、业务图查询、上传、风险研判和决策辅助 |
 
-密级：`public(0) < internal(1) < department(2) < confidential(3) < executive(4)`
+历史采购/物流/财务/质量/管理层账号兼容为 enterprise。旧密级、岗位与白名单字段仅作兼容元数据，不再限制同企业业务访问；租户边界始终保留。旧供应商门户已停用。个人会话仍按现有用户归属隔离。详见 [需求基线](docs/requirements.md)。
 
 ---
 

@@ -4,6 +4,10 @@ from fastapi import APIRouter
 
 from apps.api.routers.v1.admin import router as admin_router
 from apps.api.routers.v1.auth import router as auth_router
+from apps.api.routers.v1.prediction import router as prediction_router
+from apps.api.routers.v1.workspace import router as workspace_router
+from apps.api.routers.v1.business import router as business_router
+from apps.api.routers.v1.simulation import router as simulation_router
 from apps.api.routers.v1.benchmarks import router as benchmarks_router
 from apps.api.routers.v1.chat import router as chat_router
 from apps.api.routers.v1.dashboard import router as dashboard_router
@@ -22,6 +26,10 @@ api_router.include_router(health_router)
 
 v1_router = APIRouter(prefix="/api/v1")
 v1_router.include_router(auth_router)
+v1_router.include_router(business_router)
+v1_router.include_router(workspace_router)
+v1_router.include_router(prediction_router)
+v1_router.include_router(simulation_router)
 v1_router.include_router(users_router)
 v1_router.include_router(admin_router)
 v1_router.include_router(benchmarks_router)

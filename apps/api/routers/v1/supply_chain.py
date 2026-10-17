@@ -85,7 +85,9 @@ async def run_impact_simulation(
             ip_address=request.client.host if request.client else None,
         )
         alternatives = alt_result.affected_suppliers or []
-        alt_paths = [p.to_dict() if hasattr(p, "to_dict") else p for p in alt_result.graph_paths]
+        alt_paths = [
+            p.to_dict() if hasattr(p, "to_dict") else p for p in alt_result.graph_paths
+        ]
 
     agent_actions = []
     if payload.include_actions:
@@ -93,27 +95,27 @@ async def run_impact_simulation(
             {
                 "action": "Notify procurement manager",
                 "agent": "risk_agent",
-                "permission": "procurement_manager",
+                "permission": "enterprise",
                 "status": "recommended",
             },
             {
                 "action": f"Check alternative supplier {alternatives[0] if alternatives else 'SUP-004'}",
                 "agent": "graphrag",
-                "permission": "procurement_manager",
+                "permission": "enterprise",
                 "status": "recommended",
             },
             {
                 "action": "Query delivery status via MCP",
                 "agent": "tool_node",
-                "permission": "logistics_manager",
+                "permission": "enterprise",
                 "status": "optional",
                 "tool_name": "query_delivery_status",
             },
             {
-                "action": "Generate risk report (approval required)",
+                "action": "Preview risk report",
                 "agent": "tool_node",
-                "permission": "executive",
-                "status": "approval_required",
+                "permission": "enterprise",
+                "status": "not_implemented",
                 "tool_name": "export_risk_report",
             },
         ]

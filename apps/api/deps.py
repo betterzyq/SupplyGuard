@@ -9,7 +9,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from packages.authz.audit import write_audit_log
-from packages.authz.rbac import UserContext, build_user_context, can_access_admin, require_any_role
+from packages.authz.rbac import (
+    UserContext,
+    build_user_context,
+    can_access_admin,
+    require_any_role,
+)
 from packages.common.db.models.role import UserRole
 from packages.common.db.models.user import User
 from packages.common.db.session import get_db_session
@@ -40,7 +45,9 @@ async def get_current_user(
 
     user_id = payload.get("sub")
     if not user_id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token subject")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token subject"
+        )
 
     stmt = (
         select(User)
@@ -50,7 +57,14 @@ async def get_current_user(
     result = await session.execute(stmt)
     user = result.scalar_one_or_none()
     if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found"
+        )
+    if not user_to_context(user).is_member:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account has no active platform role",
+        )
     request.state.user = user
     request.state.user_id = str(user.id)
     request.state.tenant_id = str(user.tenant_id)
@@ -92,7 +106,11 @@ async def require_admin(
             ip_address=request.client.host if request.client else None,
         )
         await session.commit()
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=decision.reason)
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail=decision.reason
+        )
     if not can_access_admin(user_context):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="admin access required")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="admin access required"
+        )
     return user_context
